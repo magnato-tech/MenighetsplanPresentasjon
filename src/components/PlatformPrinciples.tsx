@@ -180,7 +180,7 @@ export const PlatformPrinciples: React.FC = () => {
                         </div>
                         <span>{item.title}</span>
                         <span className="text-xs text-slate-400 font-normal ml-auto">
-                          {item.id === 'nettside' ? 'Offisiell profil' : item.id === 'cms' ? 'Enkel tekst & bilder' : 'Felles ukeoversikt'}
+                          {item.id === 'nettside' ? 'Offisiell profil' : item.id === 'cms' ? 'Enkel tekst & bilder' : item.id === 'kalender' ? 'Felles ukeoversikt' : 'Innebygd avspiller'}
                         </span>
                       </div>
                     ))}

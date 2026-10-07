@@ -13,9 +13,11 @@ export const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose, ini
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [selectedInterest, setSelectedInterest] = useState<string>(
-    initialTopic === 'nettside' ? 'Nettside' : 
-    initialTopic === 'menighetsplattform' ? 'Menighetsplattform' : 
-    'Uforpliktende demo'
+    initialTopic === 'menighetsplattform-gratis' ? 'Menighetsplattform (Alltid gratis)' : 
+    initialTopic === 'menighetsplan-trial' ? 'Menighetsplan (499 kr/mnd – Prøv gratis i 1 mnd)' : 
+    initialTopic?.startsWith('modul-') ? 'Tilleggsmoduler (99 kr/mnd per modul)' :
+    initialTopic === 'demo' ? 'Se interaktiv demo av Nivå 2' :
+    'Menighetsplan (499 kr/mnd – Prøv gratis i 1 mnd)'
   );
   const [message, setMessage] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -145,12 +147,13 @@ export const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose, ini
                 <select
                   value={selectedInterest}
                   onChange={(e) => setSelectedInterest(e.target.value)}
-                  className="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1A382B] bg-white"
+                  className="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1A382B] bg-white font-medium"
                 >
-                  <option value="Uforpliktende demo">Uforpliktende videodemo av plattformen</option>
-                  <option value="Nettside">Nettside + CMS + Kalender</option>
-                  <option value="Menighetsplattform">Helhetlig menighetsplattform (inkl. grupper)</option>
-                  <option value="Flytting fra eksisterende system">Flytte fra gammel nettside / flere systemer</option>
+                  <option value="Menighetsplattform (Alltid gratis)">Menighetsplattform (Alltid gratis nettside)</option>
+                  <option value="Menighetsplan (499 kr/mnd – Prøv gratis i 1 mnd)">Menighetsplan (499 kr/mnd – Prøv gratis i 1 måned)</option>
+                  <option value="Tilleggsmoduler (99 kr/mnd per modul)">Tilleggsmoduler (99 kr/mnd per modul)</option>
+                  <option value="Se interaktiv demo av Nivå 2">Se interaktiv demo av Nivå 2</option>
+                  <option value="Uforpliktende rådgivning">Uforpliktende rådgivning</option>
                 </select>
               </div>
 

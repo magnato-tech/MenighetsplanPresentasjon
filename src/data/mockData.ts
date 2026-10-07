@@ -193,16 +193,16 @@ export const PLATFORM_MODULES: ModuleItem[] = [
   },
   {
     id: 'taler',
-    title: 'Taler & Lyd',
-    category: 'videre',
-    description: 'Arkiver lydopptak, taler og ressurser med innebygd avspiller for medlemmer.',
+    title: 'Taler & Lydarkiv',
+    category: 'start',
+    description: 'Arkiver taler, opptak og ressurser med innebygd avspiller direkte på nettsiden.',
     icon: 'Headphones'
   },
   {
     id: 'kommunikasjon',
     title: 'Kommunikasjon',
     category: 'videre',
-    description: 'E-postutsendelser, nyhetsbrev og SMS-varsler samlet i samme verktøy.',
+    description: 'Fremtidige utsendelser og varsler etter hvert som menigheten utvider.',
     icon: 'Mail'
   },
   {

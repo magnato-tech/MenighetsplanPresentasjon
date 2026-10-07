@@ -1,6 +1,6 @@
 {
-  "summary": "Revidert gjennomføringsplan for Menighetsplan basert på tilbakemelding: Endret fra 'installeres' til 'Menigheten får én samlet plattform. Funksjonene aktiveres etter behov', forsterket prinsippet 'Én kodebase – mange menigheter – egne data og egen konfigurasjon', og skjerpet fokuset på Nettside + CMS + Kalender som hovedhistorien.",
-  "updatedAt": "2026-10-07T13:45:34.089225872Z",
-  "requestFeedback": true,
-  "userFacing": true
+  "summary":  "Oppdatert gjennomføringsplan for 'Menighetsplan – Prismodell & Produktarkitektur': To hovednivåer (Kort 1: Menighetsplattform Gratis, Kort 2: Menighetsplan 499 kr/mnd), separat seksjon for 7 Tilleggsmoduler til 99 kr/mnd per modul (inkludert Utleie), samt integrert prøveperiode ('Prøv gratis i én måned') og interaktiv Nivå 2-demo.",
+  "updatedAt":  "2026-10-07T14:49:55.856590028Z",
+  "requestFeedback":  true,
+  "userFacing":  true
 }

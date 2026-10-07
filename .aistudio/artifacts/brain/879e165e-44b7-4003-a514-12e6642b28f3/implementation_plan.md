@@ -1,146 +1,162 @@
-# Menighetsplan – Digital Plattform for Norske Menigheter
+# Menighetsplan – Prismodell & Produktarkitektur
 
-Menighetsplan (menighetsplan.no) er en samlet skybasert plattform for norske menigheter som forener moderne nettside, CMS og menighetskalender i én løsning – med mulighet til å aktivere moduler som grupper, kommunikasjon og min side etter behov.
+Oppdatering av pris- og produktmodellen på `menighetsplan.no` til to distinkte kjernenivåer pluss en modulær utvidelsesmodell:
+1. **🟢 Kort 1: Menighetsplattform (Gratis – 0 kr)** – *«Hva skjer i menigheten?»*
+2. **🔵 Kort 2: Menighetsplan (499 kr/mnd – Mest populær)** – *«Hvem skal gjøre hva?»*
+3. **🟣 Tilleggsmoduler (99 kr/mnd per modul)** – Skreddersy med 7 spesialiserte moduler etter behov.
+4. **Prøveperiode & Demo**: «Prøv Menighetsplan gratis i én måned» og fungerende Nivå 2-demo.
 
 > [!IMPORTANT]
-> **Viktige prinsipper og reviderte beslutninger:**
-> - **Ingen installasjon eller lokal drift**: «Menigheten får én samlet Menighetsplan-plattform. Funksjonene aktiveres etter behov.» Plattformen leveres som en moderne nettskytjeneste (SaaS). Ingen moduler må lastes ned eller installeres manuelt.
-> - **Kjernearkitektur & Forretningsmodell**: «Én kodebase – mange menigheter – egne data og egen konfigurasjon.» Oppdateringer og forbedringer utvikles sentralt og rulles sømløst ut til alle menigheter, mens hver menighet beholder full kontroll over eget innhold, visuell profil og aktive moduler.
-> - **Fokusert salgsside fremfor produktkatalog**: Hovedhistorien på forsiden sentreres rundt **Nettside + CMS + Kalender + Plattform/moduler**, mens resterende funksjoner (grupper, min side, analyse) presenteres som naturlige utvidelser når menigheten er klar.
-> - **Visuell profil**: Varm nordisk fargetone med dyp skoggrønn (`#1A382B`), lun sand/havre (`#FAF7F2`), ren hvit (`#FFFFFF`) og skifergrå strukturer.
+> **Kjerneprinsippene i den nye modellen:**
+> - **To hovednivåer (ikke tre faste pakker)**:
+>   - **Menighetsplattform (0 kr)** dekker all offentlig formidling og samlingsplanlegging: Nettside, CMS, arrangementskalender, kjøreplan/program, dynamiske innholdsmoduler og enkel Min Side.
+>   - **Menighetsplan (499 kr/mnd)** organiserer menneskene: `Person → Gruppe → Samling → Rolle → Oppgave → Bemanning → Svar → Forfall → Oppfølging`.
+> - **Modulære tillegg til 99 kr/mnd per modul**: I stedet for en fast 999-pakke, kan menigheten aktivere nøyaktig de modulene de trenger for 99 kr/mnd per modul: *Givertjeneste*, *Utleie*, *Arrangement*, *Kommunikasjon*, *Skjemaer*, *Analyse* og *AI-assistent*.
+> - **Utleie er inkludert som ny modul**: Lokaler, tilgjengelighet, booking, avtaler, betaling og inntektsoversikt.
+> - **Tydelig risikofri inngang**: «Opprett egen menighet og prøv Menighetsplan gratis i én måned» + «Se interaktiv demo».
 
 ---
 
-## 1. Oversikt og Kjernekonsept
+## 1. De To Hovedproduktene
 
-### Hva løsningen leverer
-En moderne, responsiv SaaS-presentasjonsside for Menighetsplan. Nettsiden overbeviser menighetsledere, ansatte og frivillige om fordelene ved å samle menighetens digitale løsninger i én skybasert plattform, i stedet for å sjonglere separate systemer og innlogginger.
+### 🟢 KORT 1: MENIGHETSPLATTFORM
+**Pris:** Gratis (0 kr / alltid gratis)  
+**Kjernespørsmål:** *«Hva skjer i menigheten?»*  
+**Beskrivelse:** En komplett digital grunnplattform for menigheten, med nettside, moderne CMS, kalender og en enkel Min Side.
 
-### Produktprinsippet: Én kodebase, full selvstendighet
-Menighetsplan bygger på en moderne flerbrukermodell:
-1. **Én sentral kodebase**: Alle forbedringer, sikkerhetsoppdateringer og nye funksjoner rulles ut sentralt uten nedetid eller teknisk hodebry for menigheten.
-2. **Dedikerte menighetsdata**: Hver menighet har sine egne data, egne tilganger og full suverenitet over eget innhold.
-3. **Egen konfigurasjon og profil**: Menigheten tilpasser farger, logo, domene og hvilke moduler som er synlige.
-
----
-
-## 2. Brukeropplevelse og Sidestruktur
-
-### Fokusert Innholdsflyt (Hovedhistorien)
-1. **Header**: Merkevare *MENIGHETSPLAN*, navigasjon (`Produkt`, `Funksjoner`, `Priser`, `For menigheter`, `Om Menighetsplan`) og CTA-knapp «Kom i gang». Responsiv mobilmeny.
-2. **Hero-seksjon**:
-   - Tittel: «Én plattform for hele menigheten»
-   - Undertittel: «Nettside, CMS, kalender og digitale menighetsverktøy – samlet på ett sted.»
-   - Handlinger: «Se hvordan det fungerer» (scroll/preview) og «Kom i gang» (dialog).
-   - Realistisk interaktivt dashboard: Viser menighetens aktive kjerne (gudstjeneste, kalender, publisert innhold).
-3. **Problemet og Avlastningen**:
-   - Tittel: «Menigheten trenger ikke flere systemer»
-   - 3 konkrete problemstillinger: «Flere systemer», «Ulike innlogginger», «Innhold som må oppdateres flere steder».
-   - Svar: «Menighetsplan samler det.»
-4. **Hovedhistorie: Plattform og Modulær Oppbygging**:
-   - «Menigheten får én samlet Menighetsplan-plattform. Funksjonene aktiveres etter behov.»
-   - Start enkelt: **Nettside + CMS + Kalender**
-   - Bygg videre ved behov: **Grupper + Min side + Kommunikasjon + Analyse**
-   - Tydelig markering av prinsippet: «Én kodebase – mange menigheter – egne data og egen konfigurasjon. Sentrale oppdateringer uten installasjon.»
-5. **Hovedhistorie: Nettside + CMS**:
-   - Tittel: «En nettside dere faktisk kan styre selv»
-   - Visuell split-mockup: Viser den ferdige menighetssiden side om side med et rent CMS-redigeringspanel (sidebygger, innholdsblokker, nyheter, kalender, bilder, SEO og publisering).
-6. **Hovedhistorie: Kalender**:
-   - Tittel: «Én kalender for hele menigheten»
-   - Strukturert arrangementsvisning (Gudstjenester, husgrupper, bønnemøter, ungdomsarbeid) med filtrering og automatisk gjenbruk på nettsiden.
-7. **Utvidede Muligheter (Kort og oversiktlig)**:
-   - Administrasjon med rollebasert tilgang (Admin, Redaktør, Gruppeleder, Medlem).
-   - Analyse for å se hva som fungerer (besøkstall og mest leste artikler/sider).
-8. **Tilpasningsdyktighet: Én plattform. Mange menigheter**:
-   - Viser tre eksempelmenigheter (Sentrumskirken Oslo, Kraftverket Fellesskap, Bydelskirken) med ulike fargetoner, logoer og profiluttrykk på samme plattform.
-9. **Prismodell & Transparent Samtale**:
-   - Trinnvis inngang: Nettside, Menighetsplattform, Ekstra moduler. Tydelig CTA: «Snakk med oss».
-10. **Avsluttende CTA & Footer**:
-    - «Klar for en enklere digital menighet?»
-    - Full footer med lenker, kontakt (`hei@menighetsplan.no`) og rettigheter.
+- **Nettside og CMS**:
+  - Moderne, responsiv nettside
+  - Moderne CMS med Live Preview før publisering
+  - Sider og innhold
+  - Nyheter
+  - Taler og lydarkiv
+  - Mediebibliotek
+  - Design og designsystem
+  - SEO
+- **Kalender og samlingsplanlegging**:
+  - Offentlig kalender
+  - Gudstjenester og andre offentlige samlinger
+  - Samlingsplanlegging
+  - Program/kjøreplan for samlinger
+  - Offentlige arrangementer
+- **Dynamiske innholdsmoduler**:
+  - Henter data direkte fra menighetens administrasjon og viser dette automatisk på nettsiden.
+  - *Eksempler*: Neste gudstjeneste, kommende arrangementer, kalender, siste nyheter og siste taler.
+  - Redaktøren legger modulen inn én gang; nettsiden oppdaterer seg selv når administrasjonen endres.
+- **Min Side (Enkel inngang)**:
+  - Neste i menigheten
+  - Kommende samlinger
+  - Lenker til relevant innhold
 
 ---
 
-## 3. Visuell Profil og Designsystem
+### 🔵 KORT 2: MENIGHETSPLAN
+**Pris:** 499 kr/mnd (Mest populær – Hovedprodukt)  
+**Kjernespørsmål:** *«Hvem skal gjøre hva?»*  
+**Beskrivelse:** Alt i Menighetsplattform, pluss verktøyene for å organisere menighetens arbeid og mennesker.
 
-- **Aestetikk**: Varm nordisk minimalisme, romslig og tillitsvekkende.
-- **Farger**:
-  - Dyp skoggrønn (`#1A382B`) som bærende merkevare- og aksentfarge.
-  - Varm sand/havre (`#FAF7F2`) og ren hvit (`#FFFFFF`) for rolige bakgrunner.
-  - Granittgrønn (`#2D5A46`) og dempet oker for interaktive indikatorer.
-  - Skifer/kull (`#1E293B`) for skarp, lettlest typografi.
-- **Typografi**: Skandinavisk humanistisk sans med store overskrifter og `tabular-nums` for tall og klokkeslett.
-- **Interaksjon**: Ingen tunge animasjoner; diskrete overganger, faneskifter og mikrotilbakemeldinger.
+- **Kjernen i Menighetsplan (Visuell prosessflyt)**:
+  `Person → gruppe → samling → rolle → oppgave → bemanning → svar → forfall → oppfølging`
+- **Inkluderer**:
+  - Personer / medlemsregister
+  - Tjenestegrupper og gruppeledere
+  - Husfellesskap
+  - Roller og oppgaver
+  - Bemanning og forespørsler
+  - Bekreftelser og svar
+  - Forfall og automatisk oppfølging
+  - Min Side med personlige oppgaver og tjenestelister
+  - Gruppechat
+  - Oppstart og hjelp med å komme i gang (inkludert)
+- **Handlinger**:
+  - **Kom i gang:** Opprett egen menighet og prøv gratis i én måned (ingen binding).
+  - **Se demo:** Test en fungerende demonstrasjon av bemanningsflyten.
 
 ---
 
-## 4. Teknisk Arkitektur & Komponentmodell
+## 2. Tilleggsmoduler (99 kr/mnd per modul)
+
+Under de to hovedkortene vises en oversiktlig modulvelger der menigheten kan aktivere funksjoner etter behov for **99 kr/mnd per modul**:
+
+1. **Givertjeneste (99 kr/mnd)**:
+   - Vipps-integrasjon
+   - Engangsgaver og faste giveravtaler
+   - Giveroversikt og gavehistorikk
+   - Rapportering og årsoppgaver til Skatteetaten
+2. **Utleie (99 kr/mnd)**:
+   - Lokaler og romoversikt
+   - Tilgjengelighetskalender
+   - Bookingforespørsler og leieavtaler
+   - Betaling og inntektsoversikt (kan senere kobles mot helhetlig økonomi)
+3. **Arrangement & Registrering (99 kr/mnd)**:
+   - Påmelding og registrering
+   - Deltakerlister og ventelister
+   - Betaling
+   - Digital check-in på samlinger
+4. **Kommunikasjon (99 kr/mnd)**:
+   - SMS-utsending
+   - E-post og nyhetsbrev
+   - Målrettede utsendelser til grupper, team og deltakere
+5. **Skjemaer (99 kr/mnd)**:
+   - Fleksibel skjemabygger
+   - Påmeldings- og informasjonsskjemaer
+   - Spørreundersøkelser
+6. **Analyse (99 kr/mnd)**:
+   - *Nettsideanalyse*: Besøk, trafikk, mest brukte sider, utvikling over tid.
+   - *Menighetsanalyse*: Aktivitet i grupper, samlingsdeltakelse, bemanningsgrad, oppgaver og forfall, samt frivillig involvering over tid.
+7. **AI-assistent (99 kr/mnd)**:
+   - GDPR-sikker assistent for menigheten.
+   - Avgrenset tilgang til menighetens egne data (ikke fri eller ukontrollert tilgang til databasen).
+   - Hjelper med utkast til innhold, samlingsplaner og administrative arbeidsprosesser.
+
+---
+
+## 3. Visuell Presentasjon & UI-Struktur
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                           App Root                              │
-│       Navbar (Desktop navigasjon + Mobil hamburger-meny)        │
-└────────────────────────────────┬────────────────────────────────┘
-                                 │
-     ┌───────────────────────────┴───────────────────────────┐
-     │                                                       │
-┌────▼──────────────────────┐             ┌──────────────────▼──────────────────────┐
-│       Hero-seksjon        │             │           Problemet & Løsningen         │
-│  - Hovedbudskap           │             │  - 3 problemkort (flere systemer, etc.) │
-│  - CTA: Se hvordan / Start│             │  - "Menighetsplan samler det"           │
-│  - Interaktivt Dashboard  │             └─────────────────────────────────────────┘
-└────┬──────────────────────┘
-     │
-     ├───────────────────────────────────────────────────────┐
-     │                                                       │
-┌────▼──────────────────────┐             ┌──────────────────▼──────────────────────┐
-│   Plattform & Kjerne      │             │         Sentral Skymodell & SaaS        │
-│  - Hovedhistorie: Nettside│             │  - "Én kodebase – mange menigheter"     │
-│    + CMS + Kalender       │             │  - Sentrale oppdateringer, ingen        │
-│  - Aktiveres etter behov  │             │    lokal installasjon eller nedlasting  │
-└────┬──────────────────────┘             └─────────────────────────────────────────┘
-     │
-     ├───────────────────────────────────────────────────────┐
-     │                                                       │
-┌────▼──────────────────────┐             ┌──────────────────▼──────────────────────┐
-│      Nettside + CMS       │             │              Kalender                   │
-│  - Visuell sidevisning    │             │  - Sentral arrangementsvisning          │
-│  - Intuitivt CMS-panel    │             │  - Søndag, husgrupper, bønn, ungdom     │
-└────┬──────────────────────┘             └─────────────────────────────────────────┘
-     │
-     ├───────────────────────────────────────────────────────┐
-     │                                                       │
-┌────▼──────────────────────┐             ┌──────────────────▼──────────────────────┐
-│  Utvidede Moduler & Roller│             │  Mange Menigheter (Tilpasning)          │
-│  - Admin/roller & analyse │             │  - 3 eksempler med egne profiler        │
-│  - Min side & grupper     │             │  - Viser farge- og merkevarefrihet      │
-└────┬──────────────────────┘             └─────────────────────────────────────────┘
-     │
-     ├───────────────────────────────────────────────────────┐
-     │                                                       │
-┌────▼──────────────────────┐             ┌──────────────────▼──────────────────────┐
-│   Pris & Ekstra Moduler   │             │       Avsluttende CTA & Kontakt         │
-│  - Nettside / Plattform   │             │  - "Klar for en enklere digital         │
-│  - "Snakk med oss"        │             │    menighet?" + Kontaktdialog           │
-└───────────────────────────┘             └──────────────────┬──────────────────────┘
-                                                             │
-                                                  ┌──────────▼──────────┐
-                                                  │       Footer        │
-                                                  │  - menighetsplan.no │
-                                                  │  - hei@... / info   │
-                                                  └─────────────────────┘
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                           PricingSection.tsx                                │
+├──────────────────────────────────────────┬──────────────────────────────────┤
+│    🟢 KORT 1: MENIGHETSPLATTFORM         │   🔵 KORT 2: MENIGHETSPLAN       │
+│               0 kr                       │         499 kr/mnd               │
+│                                          │       [Mest populær]             │
+│   «Hva skjer i menigheten?»              │   «Hvem skal gjøre hva?»         │
+│   - Nettside & CMS m/ Live Preview       │   - Alt i Menighetsplattform     │
+│   - Lydarkiv & taler                     │   - Personer & medlemsregister   │
+│   - Kalender & samlingsplanlegging       │   - Tjenestegrupper & roller     │
+│   - Kjøreplan / program for samlinger    │   - Forespørsler, svar & forfall │
+│   - Dynamiske innholdsmoduler            │   - Min Side & Gruppechat        │
+│   - Enkel Min Side                       │   ┌───────────────────────────┐  │
+│                                          │   │ Prosesslinje:             │  │
+│                                          │   │ Person → Gruppe → ...     │  │
+│                                          │   └───────────────────────────┘  │
+│   [ Kom i gang med gratis nettside ]     │   [ Prøv gratis i én måned ]     │
+│                                          │   [ Se interaktiv demo ]         │
+└──────────────────────────────────────────┴──────────────────────────────────┘
+                                      │
+┌─────────────────────────────────────▼───────────────────────────────────────┐
+│              🟣 TILLEGGSMODULER – 99 KR/MND PER MODUL                       │
+│        «Aktiver funksjonene dere trenger når menigheten er klar»            │
+├─────────────┬─────────────┬─────────────┬─────────────┬───────────┬────────┤
+│ Givertjeneste│ Utleie      │ Arrangement │Kommunikasjon│ Skjemaer  │Analyse │
+│ Vipps & gaver│ Lokaler &   │ Påmelding & │ SMS & e-post│ Skjema-   │Nettside│
+│ + årsoppg.   │ booking     │ Check-in    │ nyhetsbrev  │ bygger    │+ Kirke │
+│  (99 kr/mnd) │ (99 kr/mnd) │ (99 kr/mnd) │ (99 kr/mnd) │ (99 kr/mnd)│(99/mnd)│
+├─────────────┴─────────────┴─────────────┴─────────────┴───────────┴────────┤
+│ 🤖 AI-assistent (99 kr/mnd): GDPR-sikker assistent med avgrenset datatilgang│
+└─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-### Datastruktur og Tilstand
-- `src/data/mockData.ts`: Sentralt organisert data for menigheter, kalenderhendelser, CMS-blokker, moduler og analyse.
-- `src/components/Navbar.tsx`: Responsiv toppmeny med mobilmeny.
-- `src/components/Hero.tsx`: Hovedoverskrift og realistisk dashboard-mockup.
-- `src/components/ProblemSection.tsx`: De tre utfordringene og samlingen i Menighetsplan.
-- `src/components/PlatformArchitecture.tsx`: Sentral skyoppdatering, én kodebase, og modulaktivering etter behov.
-- `src/components/CmsShowcase.tsx`: Nettside + CMS sidebygger.
-- `src/components/CalendarShowcase.tsx`: Kalender og aktiviteter.
-- `src/components/ExtensionsShowcase.tsx`: Administrasjon, roller og analyse.
-- `src/components/ChurchesShowcase.tsx`: De tre eksempelmenighetene med profiltilpasning.
-- `src/components/PricingSection.tsx`: Transparent pris- og moduloversikt.
-- `src/components/CtaSection.tsx`: Avsluttende konvertering med interaktiv kontaktdialog.
-- `src/components/Footer.tsx`: Profesjonell bunnseksjon for menighetsplan.no.
+### Justeringer i implementasjonen:
+- **`src/components/PricingSection.tsx`**:
+  - Erstatter det tidligere 3-korts oppsettet med:
+    1. To fremhevede hovedkort (**Menighetsplattform Gratis** og **Menighetsplan 499 kr/mnd**).
+    2. Visuell bemanningslinje på Menighetsplan-kortet.
+    3. Tydelige knapper: «Prøv gratis i én måned» og «Se interaktiv demo».
+    4. En dedikert seksjon for **Tilleggsmoduler – 99 kr/mnd per modul** med egne kort for de 7 modulene (*Givertjeneste*, *Utleie*, *Arrangement*, *Kommunikasjon*, *Skjemaer*, *Analyse*, *AI-assistent*).
+- **`src/components/ContactModal.tsx`**:
+  - Oppdaterer valgmuligheter til:
+    - *Menighetsplattform (Gratis)*
+    - *Menighetsplan (499 kr/mnd – Prøv gratis i 1 mnd)*
+    - *Tilleggsmoduler (99 kr/mnd)*
+    - *Avtale demo / Spørsmål*
