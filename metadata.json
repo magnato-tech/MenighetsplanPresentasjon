@@ -1,0 +1,6 @@
+{
+  "name": "Menighetsplan",
+  "description": "Én samlet digital plattform for menigheter. Nettside, CMS, kalender og menighetens digitale verktøy på ett sted.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
