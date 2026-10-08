@@ -23,8 +23,7 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = Number(process.env.PORT) || 3000;
 const NOTIFICATION_EMAIL = process.env.NOTIFICATION_EMAIL || 'magnar.totland@gmail.com';
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'menighetsplan2026';
-const FIRESTORE_SERVER_SECRET = process.env.FIRESTORE_SERVER_SECRET || 'mp_backend_sec_879e165e';
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD;
 
 // Load Firebase configuration
 const firebaseConfigFile = path.join(__dirname, 'firebase-applet-config.json');
@@ -109,9 +108,9 @@ function requireAdminAuth(req: express.Request, res: express.Response, next: exp
     }
   }
 
-  // 2. Check header or query parameter fallback
-  const adminKey = req.headers['x-admin-key'] || req.query.adminKey;
-  if (adminKey && adminKey === ADMIN_PASSWORD) {
+  // 2. Check header fallback (no URL query parameters allowed)
+  const adminKey = req.headers['x-admin-key'];
+  if (ADMIN_PASSWORD && adminKey && adminKey === ADMIN_PASSWORD) {
     return next();
   }
 
@@ -121,34 +120,13 @@ function requireAdminAuth(req: express.Request, res: express.Response, next: exp
   });
 }
 
-// Helper: send notification email via FormSubmit AJAX API
-async function sendNotificationEmail(registration: any): Promise<{ success: boolean; provider?: string; error?: string }> {
-  const planLabel = registration.selectedPlan === 'level_2_trial' 
-    ? 'Nivå 2: Menighetsplan (30 dagers gratis prøveperiode, deretter 499,-)' 
-    : 'Nivå 1: Grunnplattform (Gratis 0,-)';
-  
-  const modulesList = registration.interestedModules && registration.interestedModules.length > 0
-    ? registration.interestedModules.join(', ')
-    : 'Ingen tilleggsmoduler valgt';
-
+// Helper: send notification email without personal data
+async function sendNotificationEmail(): Promise<{ success: boolean; provider?: string; error?: string }> {
   const messageText = `
-Ny prøveperiode / registrering mottatt fra menighetsplan.no!
+Ny registrering mottatt på menighetsplan.no!
 
-Menighet: ${registration.churchName}
-Kontaktperson: ${registration.contactName} (${registration.roleTitle || 'Ingen rolle oppgitt'})
-E-post: ${registration.email}
-Telefon: ${registration.phone || 'Ikke oppgitt'}
-Ønsket adresse: ${registration.subdomainSlug ? registration.subdomainSlug + '.menighetsplan.no' : 'Ikke valgt'}
-Størrelse: ${registration.churchSize}
-Ønsket oppstart: ${registration.desiredStartDate} (${registration.startDateOption})
-Pilotkandidat: ${registration.isPilotApplicant ? 'JA (ønsker dedikert oppfølging)' : 'Nei (standard prøveperiode)'}
-Valgt modell: ${planLabel}
-Tilleggsmoduler: ${modulesList}
-Kommentarer / ønsker: ${registration.comments || 'Ingen'}
-Registrert tidspunkt: ${registration.createdAt}
-Kilde: ${registration.sourceUrl || 'menighetsplan.no'}
-
-Husk: Prøveperioden starter først når dere har klargjort og overlevert løsningen til menigheten.
+En ny menighet har registrert interesse eller forespørsel om prøveperiode.
+Logg inn i administrasjonspanelet på menighetsplan.no for å se detaljer.
   `.trim();
 
   try {
@@ -159,22 +137,9 @@ Husk: Prøveperioden starter først når dere har klargjort og overlevert løsni
         'Accept': 'application/json'
       },
       body: JSON.stringify({
-        _subject: `[Menighetsplan] Ny registrering: ${registration.churchName} (${registration.contactName})`,
-        _replyto: registration.email,
-        Menighet: registration.churchName,
-        Kontaktperson: registration.contactName,
-        Rolle: registration.roleTitle || 'Ikke oppgitt',
-        Epost: registration.email,
-        Telefon: registration.phone || 'Ikke oppgitt',
-        Adresse: registration.subdomainSlug ? `${registration.subdomainSlug}.menighetsplan.no` : 'Klargjøres',
-        Menighetsstørrelse: registration.churchSize,
-        Oppstart: registration.desiredStartDate,
-        Pilot: registration.isPilotApplicant ? 'Ja' : 'Nei',
-        Modell: planLabel,
-        Tilleggsmoduler: modulesList,
-        Kommentar: registration.comments || '',
-        Dato: registration.createdAt,
-        Melding: messageText
+        _subject: '[Menighetsplan] Ny registrering på menighetsplan.no',
+        Varsel: 'En ny menighet har registrert interesse på menighetsplan.no.',
+        Handling: 'Logg inn i administrasjonspanelet for å se detaljer.'
       })
     });
 
@@ -223,7 +188,7 @@ app.post('/api/admin/login', (req, res) => {
   }
 
   // 2. Validate password
-  if (!password || password !== ADMIN_PASSWORD) {
+  if (!password || !ADMIN_PASSWORD || password !== ADMIN_PASSWORD) {
     const currentAttempts = (attemptRecord?.attempts || 0) + 1;
     if (currentAttempts >= MAX_LOGIN_ATTEMPTS) {
       adminLoginAttempts.set(clientIp, {
@@ -290,7 +255,7 @@ app.post('/api/admin/verify', (req, res) => {
     });
   }
 
-  if (!password || password !== ADMIN_PASSWORD) {
+  if (!password || !ADMIN_PASSWORD || password !== ADMIN_PASSWORD) {
     const currentAttempts = (attemptRecord?.attempts || 0) + 1;
     if (currentAttempts >= MAX_LOGIN_ATTEMPTS) {
       adminLoginAttempts.set(clientIp, {
@@ -346,7 +311,7 @@ app.get('/api/admin/check', (req, res) => {
   }
 
   const adminKey = req.headers['x-admin-key'];
-  if (adminKey && adminKey === ADMIN_PASSWORD) {
+  if (ADMIN_PASSWORD && adminKey && adminKey === ADMIN_PASSWORD) {
     return res.json({ authenticated: true });
   }
 
@@ -370,18 +335,11 @@ app.get('/api/registrations', requireAdminAuth, async (req, res) => {
       return res.status(500).json({ success: false, error: 'Firestore database ikke tilkoblet' });
     }
 
-    const q = query(
-      collection(db, 'registrations'), 
-      where('serverToken', '==', FIRESTORE_SERVER_SECRET)
-    );
-    const snapshot = await getDocs(q);
+    const snapshot = await getDocs(collection(db, 'registrations'));
 
     const list: any[] = [];
     snapshot.forEach(docSnap => {
-      const data = docSnap.data();
-      // Remove sensitive internal fields before returning to client
-      const { serverToken, ...cleanData } = data;
-      list.push(cleanData);
+      list.push(docSnap.data());
     });
 
     // Sort newest first
@@ -459,8 +417,7 @@ app.post('/api/registrations', async (req, res) => {
       comments: body.comments?.trim().substring(0, 2000) || '',
       sourceUrl: body.sourceUrl || '',
       status: 'pending',
-      adminNotes: '',
-      serverToken: FIRESTORE_SERVER_SECRET
+      adminNotes: ''
     };
 
     // 4. Save to Persistent Firestore
@@ -472,21 +429,18 @@ app.post('/api/registrations', async (req, res) => {
     await setDoc(docRef, newRegistration);
     console.log(`Saved new registration to Firestore: ${newRegistration.id} (${newRegistration.churchName})`);
 
-    // 5. Trigger email notification to Magnar
+    // 5. Trigger email notification without personal data
     let emailStatus = { success: false };
     try {
-      emailStatus = await sendNotificationEmail(newRegistration);
+      emailStatus = await sendNotificationEmail();
     } catch (e) {
       console.error('Failed to trigger email notification:', e);
     }
 
-    // Clean registration for client response (remove serverToken)
-    const { serverToken, ...clientRegistration } = newRegistration;
-
     res.status(201).json({
       success: true,
       message: 'Registrering er mottatt og lagret sentralt i Firestore.',
-      registration: clientRegistration,
+      registration: newRegistration,
       emailNotified: emailStatus.success
     });
   } catch (err: any) {
@@ -522,9 +476,8 @@ app.patch('/api/registrations/:id', requireAdminAuth, async (req, res) => {
 
     const updatedSnap = await getDoc(docRef);
     const resultData = updatedSnap.data();
-    const { serverToken, ...cleanResult } = resultData || {};
 
-    res.json({ success: true, registration: cleanResult });
+    res.json({ success: true, registration: resultData });
   } catch (err: any) {
     console.error('Error updating registration in Firestore:', err);
     res.status(500).json({ success: false, error: err.message || 'Kunne ikke oppdatere registrering' });
@@ -534,24 +487,7 @@ app.patch('/api/registrations/:id', requireAdminAuth, async (req, res) => {
 // POST /api/test-notification - Test endpoint for testing email to Magnar (Admin only)
 app.post('/api/test-notification', requireAdminAuth, async (req, res) => {
   try {
-    const sample = {
-      churchName: 'Testkirken på menighetsplan.no',
-      contactName: 'Magnar Totland',
-      roleTitle: 'Administrator Test',
-      email: NOTIFICATION_EMAIL,
-      phone: '+47 999 99 999',
-      subdomainSlug: 'testkirken',
-      churchSize: '150_350',
-      desiredStartDate: 'Snarest mulig',
-      startDateOption: 'asap',
-      isPilotApplicant: true,
-      selectedPlan: 'level_2_trial',
-      interestedModules: ['utleie', 'arrangement'],
-      comments: 'Dette er en verifiseringstest av e-postvarsling fra server.',
-      createdAt: new Date().toISOString()
-    };
-
-    const result = await sendNotificationEmail(sample);
+    const result = await sendNotificationEmail();
     res.json({
       success: true,
       result,

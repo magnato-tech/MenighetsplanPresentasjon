@@ -13,13 +13,11 @@ import { FaqSection } from './components/FaqSection';
 import { CtaSection } from './components/CtaSection';
 import { Footer } from './components/Footer';
 import { OnboardingModal } from './components/OnboardingModal';
-import { ChurchDemoView } from './components/ChurchDemoView';
 import { AdminRegistrationsModal } from './components/AdminRegistrationsModal';
 
 export default function App() {
   const [onboardingOpen, setOnboardingOpen] = useState(false);
   const [onboardingTopic, setOnboardingTopic] = useState<string | undefined>(undefined);
-  const [demoOpen, setDemoOpen] = useState(false);
   const [adminOpen, setAdminOpen] = useState(false);
 
   // Allow admin panel access via URL query (?admin=true, #admin) or keyboard shortcut (Shift + Alt + A)
@@ -27,9 +25,6 @@ export default function App() {
     const params = new URLSearchParams(window.location.search);
     if (params.get('admin') === 'true' || window.location.hash === '#admin') {
       setAdminOpen(true);
-    }
-    if (params.get('demo') === 'true' || window.location.hash === '#demo') {
-      setDemoOpen(true);
     }
 
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -50,7 +45,7 @@ export default function App() {
   };
 
   const handleOpenDemo = () => {
-    setDemoOpen(true);
+    window.open('https://demo.menighetsplan.no', '_blank', 'noopener,noreferrer');
   };
 
   const handleExploreFeatures = () => {
@@ -125,13 +120,6 @@ export default function App() {
         isOpen={onboardingOpen}
         onClose={() => setOnboardingOpen(false)}
         initialPlan={onboardingTopic}
-      />
-
-      {/* «Bygg din egen menighet» – Fullskjerms Interaktiv Demo */}
-      <ChurchDemoView
-        isOpen={demoOpen}
-        onClose={() => setDemoOpen(false)}
-        onStartTrial={(plan) => handleOpenOnboarding(plan || 'level_2_trial')}
       />
 
       {/* Sentral administratorvisning for mottatte registreringer */}

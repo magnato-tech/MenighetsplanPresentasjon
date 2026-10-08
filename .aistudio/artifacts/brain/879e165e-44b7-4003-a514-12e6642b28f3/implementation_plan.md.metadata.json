@@ -1,6 +1,6 @@
 {
-  "summary":  "Implementeringsplan for 'Guidet omvisning' i ChurchDemoView med automatisk avspilling, pause/stopp-kontroller og trinnvis animasjon som demonstrerer forskjellene mellom Nivå 1 (Gratis) og Nivå 2 (499 kr/mnd).",
-  "updatedAt":  "2026-10-08T15:10:35.546641773Z",
+  "summary":  "Endelig implementeringsplan som oppfyller alle brukerens 7 vilkår: Fjerner serverToken og sikrer påmeldinger for produkteier (Google-konto), fjerner standardpassord og adminKey, anonymiserer e-postvarsler, fjerner appens regler og scripts, presiserer Min side i demoen (Google/e-postlenke, forfall uten begrunnelse, ingen varsles), fjerner referanser til app.menighetsplan.no og lar knapper gå til påmeldingsskjemaet, samt bekrefter at demo-oppsett styres i appens repo med egen database, sperret massesletting og nattlig reset.",
+  "updatedAt":  "2026-10-08T21:37:43.029632418Z",
   "requestFeedback":  true,
   "userFacing":  true
 }

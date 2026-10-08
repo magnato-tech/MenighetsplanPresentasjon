@@ -349,7 +349,9 @@ export const PricingSection: React.FC<PricingSectionProps> = ({ onOpenContact, o
                   <span>→</span>
                   <span className="bg-white/15 px-2 py-0.5 rounded text-white font-semibold">Forfall</span>
                   <span>→</span>
-                  <span className="bg-white/15 px-2 py-0.5 rounded text-white font-semibold">Oppfølging</span>
+                  <span className="bg-white/15 px-2 py-0.5 rounded text-white font-semibold">Ledig oppgave</span>
+                  <span>→</span>
+                  <span className="bg-white/15 px-2 py-0.5 rounded text-white font-semibold">Ny person fyller</span>
                 </div>
               </div>
 
@@ -386,7 +388,7 @@ export const PricingSection: React.FC<PricingSectionProps> = ({ onOpenContact, o
                   </div>
                   <div className="flex items-center gap-2">
                     <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                    <span>Forfall og automatisk oppfølging</span>
+                    <span>Forfall – oppgaven blir ledig</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />

@@ -112,7 +112,7 @@ export const Hero: React.FC<HeroProps> = ({ onOpenContact, onExploreFeatures, on
                     <div className="w-2.5 h-2.5 rounded-full bg-amber-400/80" />
                     <div className="w-2.5 h-2.5 rounded-full bg-emerald-400/80" />
                   </div>
-                  <span className="text-xs font-medium text-slate-200 ml-2">app.menighetsplan.no/sentrumskirken</span>
+                  <span className="text-xs font-medium text-slate-200 ml-2">sentrumskirken.menighetsplan.no</span>
                 </div>
 
                 <div className="flex items-center gap-2 text-xs">
