@@ -1,6 +1,6 @@
 {
-  "summary":  "Oppdatert gjennomføringsplan for 'Menighetsplan – Prismodell & Produktarkitektur': To hovednivåer (Kort 1: Menighetsplattform Gratis, Kort 2: Menighetsplan 499 kr/mnd), separat seksjon for 7 Tilleggsmoduler til 99 kr/mnd per modul (inkludert Utleie), samt integrert prøveperiode ('Prøv gratis i én måned') og interaktiv Nivå 2-demo.",
-  "updatedAt":  "2026-10-07T14:49:55.856590028Z",
+  "summary":  "Revidert implementeringsplan som adresserer alle 5 sikkerhets- og arkitekturpunkter: HttpOnly/Secure admin-cookie, streng miljøvariabelhåndtering, spam-sikring med honeypot og rate limiting, server-isolert Firestore-tilgang og full ende-til-ende testkjede.",
+  "updatedAt":  "2026-10-07T22:24:10.155526015Z",
   "requestFeedback":  true,
   "userFacing":  true
 }

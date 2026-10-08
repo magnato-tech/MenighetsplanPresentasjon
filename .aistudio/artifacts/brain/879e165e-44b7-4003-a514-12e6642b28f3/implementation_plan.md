@@ -1,162 +1,109 @@
-# Menighetsplan – Prismodell & Produktarkitektur
+# Persistent Firestore-lagring, Express Backend & E-postvarsling (Revidert)
 
-Oppdatering av pris- og produktmodellen på `menighetsplan.no` til to distinkte kjernenivåer pluss en modulær utvidelsesmodell:
-1. **🟢 Kort 1: Menighetsplattform (Gratis – 0 kr)** – *«Hva skjer i menigheten?»*
-2. **🔵 Kort 2: Menighetsplan (499 kr/mnd – Mest populær)** – *«Hvem skal gjøre hva?»*
-3. **🟣 Tilleggsmoduler (99 kr/mnd per modul)** – Skreddersy med 7 spesialiserte moduler etter behov.
-4. **Prøveperiode & Demo**: «Prøv Menighetsplan gratis i én måned» og fungerende Nivå 2-demo.
+Revidert arkitektur- og implementeringsplan for overgang til skybasert Firestore-lagring, isolert Express-backend med spam-beskyttelse, HttpOnly-sikret administrator-sesjon, og full ende-til-ende verifisering.
+
+## Brukeravklaringer & Sikkerhetsavklaringer
 
 > [!IMPORTANT]
-> **Kjerneprinsippene i den nye modellen:**
-> - **To hovednivåer (ikke tre faste pakker)**:
->   - **Menighetsplattform (0 kr)** dekker all offentlig formidling og samlingsplanlegging: Nettside, CMS, arrangementskalender, kjøreplan/program, dynamiske innholdsmoduler og enkel Min Side.
->   - **Menighetsplan (499 kr/mnd)** organiserer menneskene: `Person → Gruppe → Samling → Rolle → Oppgave → Bemanning → Svar → Forfall → Oppfølging`.
-> - **Modulære tillegg til 99 kr/mnd per modul**: I stedet for en fast 999-pakke, kan menigheten aktivere nøyaktig de modulene de trenger for 99 kr/mnd per modul: *Givertjeneste*, *Utleie*, *Arrangement*, *Kommunikasjon*, *Skjemaer*, *Analyse* og *AI-assistent*.
-> - **Utleie er inkludert som ny modul**: Lokaler, tilgjengelighet, booking, avtaler, betaling og inntektsoversikt.
-> - **Tydelig risikofri inngang**: «Opprett egen menighet og prøv Menighetsplan gratis i én måned» + «Se interaktiv demo».
+> Svar på de 5 spesifikke spørsmålene og sikkerhetstiltakene:
+
+1. **Admin-sesjonen (HttpOnly Cookie)**:
+   - Innloggingen oppgraderes til å sette en **`HttpOnly`, `SameSite=Strict` og `Secure` sesjons-cookie** (`admin_session`) fra serveren ved vellykket `POST /api/admin/verify`.
+   - Fordi cookien er `HttpOnly`, kan den **aldri leses eller manipuleres av JavaScript i nettleseren**, noe som eliminerer risiko for token-tyveri via XSS.
+   - API-støtte for `x-admin-key`-header beholdes som alternativ kun for automatiserte verifiseringstester via server/curl.
+2. **Admin-passordet (`ADMIN_PASSWORD`)**:
+   - `ADMIN_PASSWORD` leses **utelukkende fra `process.env.ADMIN_PASSWORD` på Node.js-serveren**.
+   - Det har **ingen `VITE_`-prefiks**, vil aldri inkluderes i klientens JavaScript-bundle, og sendes aldri til frontend i noen respons. Hvis ingen miljøvariabel er satt, kreves konfigurasjon før admin-funksjoner åpnes.
+3. **Beskyttelse av offentlig registreringsendepunkt (Anti-Spam)**:
+   - **Honeypot-felt**: Et usynlig skjema-felt (`website_company_hp`) som vanlige brukere aldri ser eller fyller ut, men som automatiske spamboter fyller ut. Hvis feltet inneholder verdi, avvises forespørselen umiddelbart.
+   - **Server Rate Limiting**: Innebygd IP-basert hastighetsbegrensning (f.eks. maks 5 innsendinger per 15 minutter per IP-adresse) for å forhindre flomangrep.
+   - **Skjemavalidering**: Streng sjekk av e-postformat, telefonnummer og strenglengder før lagring.
+4. **Isolert Firestore-tilgang (Klient vs. Server)**:
+   - Klienten får **ingen direkte lesetilgang** til `registrations`-samlingen i Firestore.
+   - Sikkerhetsreglene i `firestore.rules` stenger samlingen helt for offentlig klientlesing (`allow read, write: if false;`).
+   - All skriving og lesing skjer eksklusivt gjennom Express-backendens servertilkobling, slik at ingen persondata kan hentes ut fra nettleseren eller eksterne klient-SDK-er.
+5. **Komplett Produksjonstest**:
+   - Etter implementering kjøres en full ende-til-ende-test som dokumenteres steg for steg:
+     $$\text{Skjema} \;\longrightarrow\; \text{Firestore} \;\longrightarrow\; \text{E-postvarsel} \;\longrightarrow\; \text{Admin-innlogging} \;\longrightarrow\; \text{Statusoppdatering}$$
 
 ---
 
-## 1. De To Hovedproduktene
+## 1. Oversikt & Kjernekonsept
 
-### 🟢 KORT 1: MENIGHETSPLATTFORM
-**Pris:** Gratis (0 kr / alltid gratis)  
-**Kjernespørsmål:** *«Hva skjer i menigheten?»*  
-**Beskrivelse:** En komplett digital grunnplattform for menigheten, med nettside, moderne CMS, kalender og en enkel Min Side.
-
-- **Nettside og CMS**:
-  - Moderne, responsiv nettside
-  - Moderne CMS med Live Preview før publisering
-  - Sider og innhold
-  - Nyheter
-  - Taler og lydarkiv
-  - Mediebibliotek
-  - Design og designsystem
-  - SEO
-- **Kalender og samlingsplanlegging**:
-  - Offentlig kalender
-  - Gudstjenester og andre offentlige samlinger
-  - Samlingsplanlegging
-  - Program/kjøreplan for samlinger
-  - Offentlige arrangementer
-- **Dynamiske innholdsmoduler**:
-  - Henter data direkte fra menighetens administrasjon og viser dette automatisk på nettsiden.
-  - *Eksempler*: Neste gudstjeneste, kommende arrangementer, kalender, siste nyheter og siste taler.
-  - Redaktøren legger modulen inn én gang; nettsiden oppdaterer seg selv når administrasjonen endres.
-- **Min Side (Enkel inngang)**:
-  - Neste i menigheten
-  - Kommende samlinger
-  - Lenker til relevant innhold
+- **Hva løsningen leverer**:
+  1. Offentlige menighetskunder fyller ut "Prøv Menighetsplan gratis".
+  2. Frontend poster til `POST /api/registrations`.
+  3. Serveren sjekker honeypot og rate limiting, lagrer i Firestore med tidsstempel, og trigger e-postvarsel til `magnar.totland@gmail.com`.
+  4. Kunden mottar en trygg, profesjonell bekreftelsesside.
+  5. Magnar logger inn med passord, mottar en sikker `HttpOnly`-cookie, og administrerer henvendelsene i Firestore i sanntid.
+- **Kjerneverdi**: 100 % uavhengig av lokale filer og containere; data er permanent bevart i skyen med sterk tilgangskontroll og GDPR-vern.
 
 ---
 
-### 🔵 KORT 2: MENIGHETSPLAN
-**Pris:** 499 kr/mnd (Mest populær – Hovedprodukt)  
-**Kjernespørsmål:** *«Hvem skal gjøre hva?»*  
-**Beskrivelse:** Alt i Menighetsplattform, pluss verktøyene for å organisere menighetens arbeid og mennesker.
+## 2. Brukeropplevelse & Grensesnitt
 
-- **Kjernen i Menighetsplan (Visuell prosessflyt)**:
-  `Person → gruppe → samling → rolle → oppgave → bemanning → svar → forfall → oppfølging`
-- **Inkluderer**:
-  - Personer / medlemsregister
-  - Tjenestegrupper og gruppeledere
-  - Husfellesskap
-  - Roller og oppgaver
-  - Bemanning og forespørsler
-  - Bekreftelser og svar
-  - Forfall og automatisk oppfølging
-  - Min Side med personlige oppgaver og tjenestelister
-  - Gruppechat
-  - Oppstart og hjelp med å komme i gang (inkludert)
-- **Handlinger**:
-  - **Kom i gang:** Opprett egen menighet og prøv gratis i én måned (ingen binding).
-  - **Se demo:** Test en fungerende demonstrasjon av bemanningsflyten.
+### Kjerneflyter
+1. **Menighetens registrering**:
+   - 2-stegs registrering for menighetsnavn, kontaktperson, rolle, e-post, telefon, menighetsstørrelse og oppstart.
+   - Innsending med visuell ventestatus.
+   - Bekreftelse med tydelig beskjed: *"Vi har mottatt registreringen og tar kontakt innen 1–2 virkedager for å klargjøre prøveperioden."* Ingen interne tekniske detaljer lekkes.
+2. **Administrasjonsgrensesnitt**:
+   - Åpnes via diskret snarvei (`Shift + Alt + A`) eller URL-parameter (`?admin=true`).
+   - Låseskjerm med passordfelt.
+   - Ved godkjenning: Dashbord med statusmerking (`Ny`, `Kontaktet`, `Aktiv`, `Avslått`), notatblokk for oppfølging og sanntidsstatistikk.
 
 ---
 
-## 2. Tilleggsmoduler (99 kr/mnd per modul)
+## 3. Teknisk Sikkerhetsarkitektur
 
-Under de to hovedkortene vises en oversiktlig modulvelger der menigheten kan aktivere funksjoner etter behov for **99 kr/mnd per modul**:
-
-1. **Givertjeneste (99 kr/mnd)**:
-   - Vipps-integrasjon
-   - Engangsgaver og faste giveravtaler
-   - Giveroversikt og gavehistorikk
-   - Rapportering og årsoppgaver til Skatteetaten
-2. **Utleie (99 kr/mnd)**:
-   - Lokaler og romoversikt
-   - Tilgjengelighetskalender
-   - Bookingforespørsler og leieavtaler
-   - Betaling og inntektsoversikt (kan senere kobles mot helhetlig økonomi)
-3. **Arrangement & Registrering (99 kr/mnd)**:
-   - Påmelding og registrering
-   - Deltakerlister og ventelister
-   - Betaling
-   - Digital check-in på samlinger
-4. **Kommunikasjon (99 kr/mnd)**:
-   - SMS-utsending
-   - E-post og nyhetsbrev
-   - Målrettede utsendelser til grupper, team og deltakere
-5. **Skjemaer (99 kr/mnd)**:
-   - Fleksibel skjemabygger
-   - Påmeldings- og informasjonsskjemaer
-   - Spørreundersøkelser
-6. **Analyse (99 kr/mnd)**:
-   - *Nettsideanalyse*: Besøk, trafikk, mest brukte sider, utvikling over tid.
-   - *Menighetsanalyse*: Aktivitet i grupper, samlingsdeltakelse, bemanningsgrad, oppgaver og forfall, samt frivillig involvering over tid.
-7. **AI-assistent (99 kr/mnd)**:
-   - GDPR-sikker assistent for menigheten.
-   - Avgrenset tilgang til menighetens egne data (ikke fri eller ukontrollert tilgang til databasen).
-   - Hjelper med utkast til innhold, samlingsplaner og administrative arbeidsprosesser.
-
----
-
-## 3. Visuell Presentasjon & UI-Struktur
+### Forespørselsflyt & Beskyttelseslag
 
 ```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                           PricingSection.tsx                                │
-├──────────────────────────────────────────┬──────────────────────────────────┤
-│    🟢 KORT 1: MENIGHETSPLATTFORM         │   🔵 KORT 2: MENIGHETSPLAN       │
-│               0 kr                       │         499 kr/mnd               │
-│                                          │       [Mest populær]             │
-│   «Hva skjer i menigheten?»              │   «Hvem skal gjøre hva?»         │
-│   - Nettside & CMS m/ Live Preview       │   - Alt i Menighetsplattform     │
-│   - Lydarkiv & taler                     │   - Personer & medlemsregister   │
-│   - Kalender & samlingsplanlegging       │   - Tjenestegrupper & roller     │
-│   - Kjøreplan / program for samlinger    │   - Forespørsler, svar & forfall │
-│   - Dynamiske innholdsmoduler            │   - Min Side & Gruppechat        │
-│   - Enkel Min Side                       │   ┌───────────────────────────┐  │
-│                                          │   │ Prosesslinje:             │  │
-│                                          │   │ Person → Gruppe → ...     │  │
-│                                          │   └───────────────────────────┘  │
-│   [ Kom i gang med gratis nettside ]     │   [ Prøv gratis i én måned ]     │
-│                                          │   [ Se interaktiv demo ]         │
-└──────────────────────────────────────────┴──────────────────────────────────┘
-                                      │
-┌─────────────────────────────────────▼───────────────────────────────────────┐
-│              🟣 TILLEGGSMODULER – 99 KR/MND PER MODUL                       │
-│        «Aktiver funksjonene dere trenger når menigheten er klar»            │
-├─────────────┬─────────────┬─────────────┬─────────────┬───────────┬────────┤
-│ Givertjeneste│ Utleie      │ Arrangement │Kommunikasjon│ Skjemaer  │Analyse │
-│ Vipps & gaver│ Lokaler &   │ Påmelding & │ SMS & e-post│ Skjema-   │Nettside│
-│ + årsoppg.   │ booking     │ Check-in    │ nyhetsbrev  │ bygger    │+ Kirke │
-│  (99 kr/mnd) │ (99 kr/mnd) │ (99 kr/mnd) │ (99 kr/mnd) │ (99 kr/mnd)│(99/mnd)│
-├─────────────┴─────────────┴─────────────┴─────────────┴───────────┴────────┤
-│ 🤖 AI-assistent (99 kr/mnd): GDPR-sikker assistent med avgrenset datatilgang│
-└─────────────────────────────────────────────────────────────────────────────┘
+┌────────────────────────────────────────────────────────────────────────┐
+│                        OFFENTLIG KLIENT (Nettleser)                    │
+│                                                                        │
+│   Skjemainnsending (inkl. usynlig Honeypot-felt "website_company_hp")  │
+└───────────────────────────────────┬────────────────────────────────────┘
+                                    │ POST /api/registrations
+                                    ▼
+┌────────────────────────────────────────────────────────────────────────┐
+│                       EXPRESS BACKEND (server.ts)                      │
+│                                                                        │
+│   [Sikkerhetslag 1: Rate Limiter] -> Maks 5 per 15 min per IP          │
+│   [Sikkerhetslag 2: Honeypot-sjekk] -> Avvis hvis bot har fylt felt    │
+│   [Sikkerhetslag 3: Skjemavalidering] -> Gyldig e-post og obligatorisk │
+│                                                                        │
+│                 ┌─────────────────┴─────────────────┐                  │
+│                 ▼                                   ▼                  │
+│   [Firestore Server-klient]               [E-postvarsling]             │
+│   Skriver til /registrations/{id}         Sender til magnar.totland    │
+└─────────────────┬───────────────────────────────────┬──────────────────┘
+                  │                                   │
+                  ▼                                   ▼
+      Google Cloud Firestore               magnar.totland@gmail.com
+      (Stengt for offentlig klient)        (Varsel om ny registrering)
 ```
 
-### Justeringer i implementasjonen:
-- **`src/components/PricingSection.tsx`**:
-  - Erstatter det tidligere 3-korts oppsettet med:
-    1. To fremhevede hovedkort (**Menighetsplattform Gratis** og **Menighetsplan 499 kr/mnd**).
-    2. Visuell bemanningslinje på Menighetsplan-kortet.
-    3. Tydelige knapper: «Prøv gratis i én måned» og «Se interaktiv demo».
-    4. En dedikert seksjon for **Tilleggsmoduler – 99 kr/mnd per modul** med egne kort for de 7 modulene (*Givertjeneste*, *Utleie*, *Arrangement*, *Kommunikasjon*, *Skjemaer*, *Analyse*, *AI-assistent*).
-- **`src/components/ContactModal.tsx`**:
-  - Oppdaterer valgmuligheter til:
-    - *Menighetsplattform (Gratis)*
-    - *Menighetsplan (499 kr/mnd – Prøv gratis i 1 mnd)*
-    - *Tilleggsmoduler (99 kr/mnd)*
-    - *Avtale demo / Spørsmål*
+### Autentiseringsflyt for Admin
+
+```
+Magnar taster passord -> POST /api/admin/verify -> Server sjekker process.env.ADMIN_PASSWORD
+                                                -> Setter Set-Cookie: admin_session=...; HttpOnly; SameSite=Strict; Secure
+                                                -> Returnerer { success: true }
+
+GET /api/registrations -> Express requireAdminAuth sjekker HttpOnly-cookie
+                       -> Henter registreringer fra Firestore
+                       -> Returnerer kun til verifisert administrator
+```
+
+---
+
+## 4. Test- og Verifiseringsplan (Ende-til-ende)
+
+Under gjennomføringen vil vi utføre og dokumentere:
+1. **Bot-test**: Sende forespørsel med honeypot-felt for å verifisere at spam avvises umiddelbart.
+2. **Uautorisert test**: Sende `GET /api/registrations` uten cookie for å verifisere `HTTP 401 Unauthorized`.
+3. **Ekte registrering**: Sende inn en gyldig prøveperiode-registrering fra nettsiden.
+4. **Firestore-bekreftelse**: Kontrollere at registreringen finnes med full struktur i Firestore.
+5. **E-postverifisering**: Kontrollere at varslingsforespørselen til `magnar.totland@gmail.com` er utført og logget.
+6. **Admin-innlogging**: Logge inn med admin-passord, motta HttpOnly cookie, verifisere at registreringen vises i tabellen, og endre status til `Kontaktet`.

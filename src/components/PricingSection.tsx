@@ -22,9 +22,10 @@ import {
 
 interface PricingSectionProps {
   onOpenContact: (plan?: string) => void;
+  onOpenDemo?: () => void;
 }
 
-export const PricingSection: React.FC<PricingSectionProps> = ({ onOpenContact }) => {
+export const PricingSection: React.FC<PricingSectionProps> = ({ onOpenContact, onOpenDemo }) => {
   const [selectedAddon, setSelectedAddon] = useState<string>('givertjeneste');
 
   const addOnModules = [
@@ -139,20 +140,20 @@ export const PricingSection: React.FC<PricingSectionProps> = ({ onOpenContact })
             Menigheten starter med gratis grunnplattform for offentlig formidling, og oppgraderer til Menighetsplan når dere skal organisere menneskene.
           </p>
 
-          {/* Conceptual Split Banner */}
-          <div className="mt-8 inline-flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-6 p-3 sm:px-6 rounded-2xl bg-white border border-slate-200 shadow-2xs text-xs font-medium text-slate-700">
-            <div className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-              <span className="font-bold text-slate-900">Gratis:</span>
-              <span>«Hva skjer i menigheten?»</span>
+            {/* Conceptual Split Banner */}
+            <div className="mt-8 inline-flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-6 p-3 sm:px-6 rounded-2xl bg-white border border-slate-200 shadow-2xs text-xs font-medium text-slate-700">
+              <div className="flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                <span className="font-bold text-slate-900">Gratis (0 kr):</span>
+                <span>«Hva skjer i menigheten?»</span>
+              </div>
+              <span className="hidden sm:inline text-slate-300">|</span>
+              <div className="flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-[#1A382B]"></span>
+                <span className="font-bold text-slate-900">499 kr/mnd:</span>
+                <span>«Hvem skal gjøre hva?»</span>
+              </div>
             </div>
-            <span className="hidden sm:inline text-slate-300">|</span>
-            <div className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-[#1A382B]"></span>
-              <span className="font-bold text-slate-900">499 kr/mnd:</span>
-              <span>«Hvem skal gjøre hva?»</span>
-            </div>
-          </div>
         </div>
 
         {/* The Two Main Products Grid (Kort 1: Menighetsplattform, Kort 2: Menighetsplan) */}
@@ -404,22 +405,22 @@ export const PricingSection: React.FC<PricingSectionProps> = ({ onOpenContact })
 
             </div>
 
-            {/* Actions: Kom i gang (prøv gratis i 1 mnd) + Se demo */}
+            {/* Actions: Kom i gang (prøv gratis i 30 dager) + Se demo */}
             <div className="pt-6 space-y-2.5">
               <button
                 onClick={() => onOpenContact('menighetsplan-trial')}
                 className="w-full py-4 px-4 rounded-xl text-xs sm:text-sm font-bold text-[#1A382B] bg-[#FAF7F2] hover:bg-white shadow-md transition-colors flex items-center justify-center gap-2 cursor-pointer"
               >
-                <span>Prøv Menighetsplan gratis i én måned</span>
+                <span>Prøv Menighetsplan gratis i 30 dager</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
 
               <button
-                onClick={() => onOpenContact('demo')}
+                onClick={onOpenDemo}
                 className="w-full py-2.5 px-4 rounded-xl text-xs font-semibold text-emerald-100 hover:text-white bg-white/10 hover:bg-white/15 transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
               >
-                <Play className="w-3.5 h-3.5 fill-current" />
-                <span>Se interaktiv demo av nivå 2</span>
+                <span>Se demo på demo.menighetsplan.no</span>
+                <ChevronRight className="w-3.5 h-3.5" />
               </button>
             </div>
 

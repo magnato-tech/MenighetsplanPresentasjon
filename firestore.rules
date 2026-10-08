@@ -1,0 +1,162 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // =========================================================================
+    // Hjelpefunksjoner for rettigheter og modulstyring
+    // =========================================================================
+
+    // Henter systemets entitlement-dokument for denne menigheten
+    function getEntitlements() {
+      return get(/databases/$(database)/documents/system/entitlements).data;
+    }
+
+    // Sjekker om menigheten har et aktivt Nivå 2 (eller aktiv prøveperiode)
+    function isLevel2OrTrial() {
+      let ent = getEntitlements();
+      return ent.tier == 'level_2_menighetsplan' || (ent.trial.isActive == true && request.time < ent.trial.expiresAt);
+    }
+
+    // Sjekker om en spesifikk tilleggsmodul (99 kr/mnd) er aktivert av leverandøren
+    function hasModule(moduleName) {
+      return getEntitlements().activeModules[moduleName] == true;
+    }
+
+    // Sjekker om brukeren er autentisert i menighetens Firebase Auth
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Sjekker om brukeren har admin-rolle i menigheten
+    function isChurchAdmin() {
+      return isAuthenticated() && 
+        exists(/databases/$(database)/documents/members/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/members/$(request.auth.uid)).data.role == 'Admin';
+    }
+
+    // Sjekker om brukeren er redaktør eller admin
+    function isChurchEditor() {
+      return isAuthenticated() && 
+        exists(/databases/$(database)/documents/members/$(request.auth.uid)) &&
+        (get(/databases/$(database)/documents/members/$(request.auth.uid)).data.role == 'Admin' ||
+         get(/databases/$(database)/documents/members/$(request.auth.uid)).data.role == 'Redaktør');
+    }
+
+    // =========================================================================
+    // 1. SYSTEM- OG LISENSDOKUMENTER (/system/entitlements)
+    // =========================================================================
+    // STRENG REGEL: Menighetens brukere og administratorer kan KUN lese lisens/moduler.
+    // Skriving er KUN tillatt via Firebase Admin SDK / leverandørens CLI-skript.
+    match /system/{docId} {
+      allow read: if isAuthenticated();
+      allow write: if false; 
+    }
+
+    // =========================================================================
+    // 2. NIVÅ 1: NETTSIDE, CMS & OFFENTLIG KALENDER (GRATIS)
+    // =========================================================================
+    // Offentlig lesbart innhold for menighetens nettside og kalender
+    match /pages/{pageId} {
+      allow read: if true;
+      allow write: if isChurchEditor();
+    }
+
+    match /calendar_events/{eventId} {
+      allow read: if true;
+      allow write: if isChurchEditor();
+    }
+
+    match /gatherings/{gatheringId} {
+      allow read: if true;
+      allow write: if isChurchEditor();
+    }
+
+    match /news/{articleId} {
+      allow read: if true;
+      allow write: if isChurchEditor();
+    }
+
+    match /audio_archive/{audioId} {
+      allow read: if true;
+      allow write: if isChurchEditor();
+    }
+
+    // =========================================================================
+    // 3. NIVÅ 2: MEDLEMMER, BEMANNING & INTERN OPPFØLGING (499 kr/mnd)
+    // =========================================================================
+    // Krever at Nivå 2 eller prøveperiode er aktiv
+    match /members/{memberId} {
+      allow read: if isAuthenticated() && isLevel2OrTrial();
+      allow create, update, delete: if isChurchAdmin() && isLevel2OrTrial();
+    }
+
+    match /groups/{groupId} {
+      allow read: if isAuthenticated() && isLevel2OrTrial();
+      allow write: if isChurchEditor() && isLevel2OrTrial();
+    }
+
+    match /roles/{roleId} {
+      allow read: if isAuthenticated() && isLevel2OrTrial();
+      allow write: if isChurchAdmin() && isLevel2OrTrial();
+    }
+
+    // Bemanningsflyten: person -> gruppe -> samling -> rolle -> oppgave -> bemanning -> svar -> forfall -> oppfølging
+    match /tasks/{taskId} {
+      allow read: if isAuthenticated() && isLevel2OrTrial();
+      allow create, update, delete: if isChurchEditor() && isLevel2OrTrial();
+    }
+
+    match /assignments/{assignmentId} {
+      allow read: if isAuthenticated() && isLevel2OrTrial();
+      // Bruker kan oppdatere sitt eget svar/forfall (status: bekreftet/forfall)
+      allow update: if isAuthenticated() && isLevel2OrTrial() && 
+        (resource.data.memberId == request.auth.uid || isChurchEditor());
+      allow create, delete: if isChurchEditor() && isLevel2OrTrial();
+    }
+
+    match /chats/{chatId} {
+      allow read, write: if isAuthenticated() && isLevel2OrTrial();
+    }
+
+    // =========================================================================
+    // 4. TILLEGGSMODULER (99 kr/mnd per modul)
+    // =========================================================================
+    
+    // Givertjeneste (krever hasModule('givertjeneste'))
+    match /donations/{donationId} {
+      allow read: if isAuthenticated() && hasModule('givertjeneste');
+      allow write: if isChurchAdmin() && hasModule('givertjeneste');
+    }
+
+    // Utleie (krever hasModule('utleie'))
+    match /rentals/{rentalId} {
+      allow read: if isAuthenticated() && hasModule('utleie');
+      allow write: if isChurchEditor() && hasModule('utleie');
+    }
+
+    // Arrangement & Påmelding (krever hasModule('arrangement'))
+    match /events_registration/{regId} {
+      allow read: if isAuthenticated() && hasModule('arrangement');
+      allow write: if isChurchEditor() && hasModule('arrangement');
+    }
+
+    // Kommunikasjon & Utsendelser (krever hasModule('kommunikasjon'))
+    match /communications/{commId} {
+      allow read, write: if isChurchAdmin() && hasModule('kommunikasjon');
+    }
+
+    // Skjemaer (krever hasModule('skjemaer'))
+    match /forms/{formId} {
+      allow read: if true; // Skjemaer kan fylles ut eksternt
+      allow write: if isChurchEditor() && hasModule('skjemaer');
+    }
+
+    // Registreringer fra nettsiden: Kun tilgjengelig for backend-server med gyldig server-token
+    match /registrations/{regId} {
+      allow create: if request.resource.data.serverToken is string && request.resource.data.serverToken == "mp_backend_sec_879e165e";
+      allow read: if resource.data.serverToken == "mp_backend_sec_879e165e";
+      allow update: if request.resource.data.serverToken == "mp_backend_sec_879e165e" && resource.data.serverToken == "mp_backend_sec_879e165e";
+      allow delete: if resource.data.serverToken == "mp_backend_sec_879e165e";
+    }
+  }
+}

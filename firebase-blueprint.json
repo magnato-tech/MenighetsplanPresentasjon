@@ -1,0 +1,103 @@
+{
+  "entities": {
+    "Registration": {
+      "title": "Registration",
+      "description": "Church trial registration submitted via menighetsplan.no",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique registration ID"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "ISO timestamp when the registration was created"
+        },
+        "churchName": {
+          "type": "string",
+          "maxLength": 200,
+          "description": "Name of the church or congregation"
+        },
+        "contactName": {
+          "type": "string",
+          "maxLength": 150,
+          "description": "Full name of the contact person"
+        },
+        "roleTitle": {
+          "type": "string",
+          "maxLength": 100,
+          "description": "Role of the contact person in the church"
+        },
+        "email": {
+          "type": "string",
+          "maxLength": 150,
+          "description": "Primary contact email address"
+        },
+        "phone": {
+          "type": "string",
+          "maxLength": 50,
+          "description": "Primary contact phone number"
+        },
+        "subdomainSlug": {
+          "type": "string",
+          "maxLength": 63,
+          "description": "Desired subdomain on menighetsplan.no"
+        },
+        "churchSize": {
+          "type": "string",
+          "description": "Estimated size of congregation"
+        },
+        "desiredStartDate": {
+          "type": "string",
+          "description": "Desired launch timing"
+        },
+        "startDateOption": {
+          "type": "string",
+          "description": "Selection option for start date"
+        },
+        "customDate": {
+          "type": "string",
+          "description": "Optional specific custom date"
+        },
+        "isPilotApplicant": {
+          "type": "boolean",
+          "description": "Whether congregation wants dedicated pilot follow-up"
+        },
+        "selectedPlan": {
+          "type": "string",
+          "description": "Selected plan model"
+        },
+        "interestedModules": {
+          "type": "array",
+          "description": "List of add-on module slugs the church is interested in"
+        },
+        "comments": {
+          "type": "string",
+          "maxLength": 2000,
+          "description": "Optional message or comments"
+        },
+        "sourceUrl": {
+          "type": "string",
+          "description": "Referrer or submission page source"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["pending", "contacted", "preparing", "active", "archived"],
+          "description": "Administrative follow-up status"
+        },
+        "adminNotes": {
+          "type": "string",
+          "maxLength": 3000,
+          "description": "Internal administrative notes"
+        }
+      },
+      "required": ["churchName", "contactName", "email", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/registrations/{registrationId}": {
+      "schema": "Registration",
+      "description": "Stores submitted trial registrations from menighetsplan.no"
+    }
+  }
+}

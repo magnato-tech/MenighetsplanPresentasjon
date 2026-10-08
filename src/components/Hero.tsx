@@ -20,9 +20,10 @@ import { MOCK_CALENDAR_EVENTS, ANALYTICS_DATA } from '../data/mockData';
 interface HeroProps {
   onOpenContact: (topic?: string) => void;
   onExploreFeatures: () => void;
+  onOpenDemo: () => void;
 }
 
-export const Hero: React.FC<HeroProps> = ({ onOpenContact, onExploreFeatures }) => {
+export const Hero: React.FC<HeroProps> = ({ onOpenContact, onExploreFeatures, onOpenDemo }) => {
   const [activeTab, setActiveTab] = useState<'oversikt' | 'kalender' | 'nettside' | 'grupper'>('oversikt');
 
   return (
@@ -55,25 +56,30 @@ export const Hero: React.FC<HeroProps> = ({ onOpenContact, onExploreFeatures }) 
             </p>
 
             <div className="mt-4 text-sm text-slate-500 font-medium">
-              Menigheten slipper å sette sammen og drifte mange forskjellige systemer.
+              Menigheten får én samlet Menighetsplan-plattform. Funksjonene aktiveres etter behov.
             </div>
 
             {/* CTAs */}
-            <div className="mt-8 flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
+            <div className="mt-8 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
               <button
-                onClick={onExploreFeatures}
-                className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-lg text-base font-semibold text-[#FAF7F2] bg-[#1A382B] hover:bg-[#234D3B] shadow-sm transition-all duration-200 active:scale-98 cursor-pointer"
+                onClick={() => onOpenContact('hero-trial')}
+                className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl text-base font-semibold text-[#FAF7F2] bg-[#1A382B] hover:bg-[#234D3B] shadow-sm transition-all duration-200 active:scale-98 cursor-pointer group"
               >
-                <span>Se hvordan det fungerer</span>
-                <ArrowRight className="w-4 h-4" />
+                <span>Prøv Menighetsplan gratis</span>
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
               </button>
 
               <button
-                onClick={() => onOpenContact('kom-i-gang')}
-                className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-lg text-base font-semibold text-slate-800 bg-white hover:bg-slate-50 border border-slate-300 shadow-xs transition-all duration-200 cursor-pointer"
+                onClick={onOpenDemo}
+                className="inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-xl text-base font-semibold text-slate-800 bg-white hover:bg-slate-50 border border-slate-300 shadow-2xs transition-all duration-200 cursor-pointer"
               >
-                <span>Kom i gang</span>
+                <span>Se demo</span>
               </button>
+            </div>
+
+            <div className="mt-3 flex items-center gap-2 text-xs text-slate-500 font-medium">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
+              <span>30 dagers prøveperiode • Ingen kredittkort • 0,- i oppstart</span>
             </div>
 
             {/* Minimal trust proof badges */}

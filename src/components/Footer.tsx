@@ -3,9 +3,10 @@ import { Mail, Globe, Heart } from 'lucide-react';
 
 interface FooterProps {
   onOpenContact: (topic?: string) => void;
+  onOpenAdmin?: () => void;
 }
 
-export const Footer: React.FC<FooterProps> = ({ onOpenContact }) => {
+export const Footer: React.FC<FooterProps> = ({ onOpenContact, onOpenAdmin }) => {
   return (
     <footer className="bg-[#FAF7F2] text-slate-700 pt-16 pb-12 border-t border-[#1A382B]/10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -67,6 +68,11 @@ export const Footer: React.FC<FooterProps> = ({ onOpenContact }) => {
                   Om Menighetsplan
                 </a>
               </li>
+              <li>
+                <a href="#faq" className="text-slate-600 hover:text-[#1A382B] transition-colors">
+                  Ofte stilte spørsmål
+                </a>
+              </li>
             </ul>
           </div>
 
@@ -92,20 +98,18 @@ export const Footer: React.FC<FooterProps> = ({ onOpenContact }) => {
               </li>
               <li>
                 <a 
-                  href="#personvern" 
-                  onClick={(e) => { e.preventDefault(); alert('Menighetsplan følger gjeldende norsk personvernlovgivning (GDPR). All data lagres trygt.'); }}
+                  href="#faq" 
                   className="text-slate-600 hover:text-[#1A382B] transition-colors"
                 >
-                  Personvern
+                  Personvern & GDPR
                 </a>
               </li>
               <li>
                 <a 
-                  href="#vilkar" 
-                  onClick={(e) => { e.preventDefault(); alert('Standard SaaS-vilkår for Menighetsplan: Ingen bindingstid på grunnpakke, sentral skyoppdatering og full dataportabilitet.'); }}
+                  href="#faq" 
                   className="text-slate-600 hover:text-[#1A382B] transition-colors"
                 >
-                  Vilkår
+                  Vilkår & Prøveperiode
                 </a>
               </li>
             </ul>
@@ -120,7 +124,13 @@ export const Footer: React.FC<FooterProps> = ({ onOpenContact }) => {
         {/* Bottom copyright line */}
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-4">
           <div>
-            © {new Date().getFullYear()} Menighetsplan. Alle rettigheter reservert.
+            <span 
+              onClick={onOpenAdmin}
+              className={onOpenAdmin ? "cursor-default select-none" : ""}
+              title={onOpenAdmin ? "Trykk Shift+Alt+A eller legg til ?admin=true i adressefeltet for administrator-innlogging" : undefined}
+            >
+              © {new Date().getFullYear()} Menighetsplan. Alle rettigheter reservert.
+            </span>
           </div>
           <div className="flex items-center gap-1 text-slate-500">
             <span>Utviklet for norske menigheter</span>

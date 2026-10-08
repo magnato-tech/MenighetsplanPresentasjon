@@ -3,9 +3,10 @@ import { ArrowRight, CheckCircle2, ShieldCheck, Mail } from 'lucide-react';
 
 interface CtaSectionProps {
   onOpenContact: (topic?: string) => void;
+  onOpenDemo?: () => void;
 }
 
-export const CtaSection: React.FC<CtaSectionProps> = ({ onOpenContact }) => {
+export const CtaSection: React.FC<CtaSectionProps> = ({ onOpenContact, onOpenDemo }) => {
   return (
     <section className="py-20 lg:py-28 bg-white border-b border-[#1A382B]/10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -29,7 +30,7 @@ export const CtaSection: React.FC<CtaSectionProps> = ({ onOpenContact }) => {
             </h2>
 
             <p className="mt-6 text-base sm:text-xl text-slate-200 leading-relaxed max-w-2xl mx-auto">
-              Se hvordan Menighetsplan kan samle menighetens digitale løsninger på ett sted.
+              Se hvordan Menighetsplan kan samle menighetens digitale løsninger på ett sted. Start 30 dagers gratis prøveperiode eller utforsk den åpne demoen.
             </p>
 
             <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -37,17 +38,18 @@ export const CtaSection: React.FC<CtaSectionProps> = ({ onOpenContact }) => {
                 onClick={() => onOpenContact('avsluttende-cta')}
                 className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl text-base font-bold text-[#1A382B] bg-[#FAF7F2] hover:bg-white shadow-lg transition-all duration-200 active:scale-98 cursor-pointer"
               >
-                <span>Kom i gang</span>
+                <span>Prøv gratis i 30 dager</span>
                 <ArrowRight className="w-5 h-5" />
               </button>
 
-              <a
-                href="mailto:hei@menighetsplan.no"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-4 rounded-xl text-base font-semibold text-white/90 hover:text-white bg-white/10 hover:bg-white/15 border border-white/10 transition-colors"
-              >
-                <Mail className="w-4 h-4 text-emerald-300" />
-                <span>hei@menighetsplan.no</span>
-              </a>
+              {onOpenDemo && (
+                <button
+                  onClick={onOpenDemo}
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-4 rounded-xl text-base font-semibold text-white/90 hover:text-white bg-white/10 hover:bg-white/15 border border-white/10 transition-colors cursor-pointer"
+                >
+                  <span>Se demo (demo.menighetsplan.no)</span>
+                </button>
+              )}
             </div>
 
             <div className="mt-12 pt-8 border-t border-white/10 flex flex-wrap items-center justify-center gap-y-3 gap-x-8 text-xs text-slate-300">
