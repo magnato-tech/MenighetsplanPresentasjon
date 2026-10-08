@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   X, 
   CheckCircle2, 
@@ -43,8 +43,18 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
   const [comments, setComments] = useState('');
   const [isPilotApplicant, setIsPilotApplicant] = useState(true);
   const [selectedPlan, setSelectedPlan] = useState<'level_2_trial' | 'level_1_gratis'>(
-    initialPlan === 'menighetsplattform-gratis' ? 'level_1_gratis' : 'level_2_trial'
+    initialPlan === 'menighetsplattform-gratis' || initialPlan === 'level_1_gratis' ? 'level_1_gratis' : 'level_2_trial'
   );
+
+  useEffect(() => {
+    if (isOpen && initialPlan) {
+      if (initialPlan === 'menighetsplattform-gratis' || initialPlan === 'level_1_gratis') {
+        setSelectedPlan('level_1_gratis');
+      } else {
+        setSelectedPlan('level_2_trial');
+      }
+    }
+  }, [isOpen, initialPlan]);
   const [interestedModules, setInterestedModules] = useState<string[]>([]);
   // Honeypot spam trap
   const [hpCompanyUrl, setHpCompanyUrl] = useState('');

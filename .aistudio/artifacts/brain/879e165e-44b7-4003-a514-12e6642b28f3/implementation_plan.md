@@ -1,109 +1,118 @@
-# Persistent Firestore-lagring, Express Backend & E-postvarsling (Revidert)
+# Guidet omvisning i «Bygg din egen menighet»
 
-Revidert arkitektur- og implementeringsplan for overgang til skybasert Firestore-lagring, isolert Express-backend med spam-beskyttelse, HttpOnly-sikret administrator-sesjon, og full ende-til-ende verifisering.
+En interaktiv, automatisk spillende guidet omvisning i `ChurchDemoView` som leder brukeren gjennom de viktigste forskjellene mellom **Nivå 1 (Gratis CMS & nettside)** og **Nivå 2 (Menighetsplan 499 kr/mnd med bemanning og forfallshåndtering)**, med full kontroll via pause-, navigasjons- og stoppknapper.
 
-## Brukeravklaringer & Sikkerhetsavklaringer
+## Brukeravklaringer & bekreftede valg
 
 > [!IMPORTANT]
-> Svar på de 5 spesifikke spørsmålene og sikkerhetstiltakene:
-
-1. **Admin-sesjonen (HttpOnly Cookie)**:
-   - Innloggingen oppgraderes til å sette en **`HttpOnly`, `SameSite=Strict` og `Secure` sesjons-cookie** (`admin_session`) fra serveren ved vellykket `POST /api/admin/verify`.
-   - Fordi cookien er `HttpOnly`, kan den **aldri leses eller manipuleres av JavaScript i nettleseren**, noe som eliminerer risiko for token-tyveri via XSS.
-   - API-støtte for `x-admin-key`-header beholdes som alternativ kun for automatiserte verifiseringstester via server/curl.
-2. **Admin-passordet (`ADMIN_PASSWORD`)**:
-   - `ADMIN_PASSWORD` leses **utelukkende fra `process.env.ADMIN_PASSWORD` på Node.js-serveren**.
-   - Det har **ingen `VITE_`-prefiks**, vil aldri inkluderes i klientens JavaScript-bundle, og sendes aldri til frontend i noen respons. Hvis ingen miljøvariabel er satt, kreves konfigurasjon før admin-funksjoner åpnes.
-3. **Beskyttelse av offentlig registreringsendepunkt (Anti-Spam)**:
-   - **Honeypot-felt**: Et usynlig skjema-felt (`website_company_hp`) som vanlige brukere aldri ser eller fyller ut, men som automatiske spamboter fyller ut. Hvis feltet inneholder verdi, avvises forespørselen umiddelbart.
-   - **Server Rate Limiting**: Innebygd IP-basert hastighetsbegrensning (f.eks. maks 5 innsendinger per 15 minutter per IP-adresse) for å forhindre flomangrep.
-   - **Skjemavalidering**: Streng sjekk av e-postformat, telefonnummer og strenglengder før lagring.
-4. **Isolert Firestore-tilgang (Klient vs. Server)**:
-   - Klienten får **ingen direkte lesetilgang** til `registrations`-samlingen i Firestore.
-   - Sikkerhetsreglene i `firestore.rules` stenger samlingen helt for offentlig klientlesing (`allow read, write: if false;`).
-   - All skriving og lesing skjer eksklusivt gjennom Express-backendens servertilkobling, slik at ingen persondata kan hentes ut fra nettleseren eller eksterne klient-SDK-er.
-5. **Komplett Produksjonstest**:
-   - Etter implementering kjøres en full ende-til-ende-test som dokumenteres steg for steg:
-     $$\text{Skjema} \;\longrightarrow\; \text{Firestore} \;\longrightarrow\; \text{E-postvarsel} \;\longrightarrow\; \text{Admin-innlogging} \;\longrightarrow\; \text{Statusoppdatering}$$
+> Basert på dine svar i avklaringsrunden er følgende designvalg bekreftet:
+> 
+> - **Presentasjonsform**: Automatisk spillende gjennomgang med pause- og stoppknapper samt manuell overstyring (forrige/neste).
+> - **Sekvens & stoppesteder**: Nettside og CMS først (Nivå 1), deretter frivillige, vaktplan og forfallshåndtering (Nivå 2).
 
 ---
 
-## 1. Oversikt & Kjernekonsept
+## 1. Oversikt og kjerneopplevelse
 
-- **Hva løsningen leverer**:
-  1. Offentlige menighetskunder fyller ut "Prøv Menighetsplan gratis".
-  2. Frontend poster til `POST /api/registrations`.
-  3. Serveren sjekker honeypot og rate limiting, lagrer i Firestore med tidsstempel, og trigger e-postvarsel til `magnar.totland@gmail.com`.
-  4. Kunden mottar en trygg, profesjonell bekreftelsesside.
-  5. Magnar logger inn med passord, mottar en sikker `HttpOnly`-cookie, og administrerer henvendelsene i Firestore i sanntid.
-- **Kjerneverdi**: 100 % uavhengig av lokale filer og containere; data er permanent bevart i skyen med sterk tilgangskontroll og GDPR-vern.
+Omvisningen gir nye besøkende og menighetsledere en uanstrengt og visuelt engasjerende demonstrasjon av hva de får. I stedet for å måtte klikke seg rundt på måfå, kan brukeren lene seg tilbake og se demoen automatisk demonstrere hvordan menigheten først fungerer med gratisplattformen, og hvordan arbeidsflyten transformeres når Menighetsplan til 499 kr/mnd aktiveres.
+
+Brukeren har kontinuerlig full kontroll med pause-, stopp- og trinnknapper.
 
 ---
 
-## 2. Brukeropplevelse & Grensesnitt
+## 2. Brukeropplevelse & omvisningstrinn
 
-### Kjerneflyter
-1. **Menighetens registrering**:
-   - 2-stegs registrering for menighetsnavn, kontaktperson, rolle, e-post, telefon, menighetsstørrelse og oppstart.
-   - Innsending med visuell ventestatus.
-   - Bekreftelse med tydelig beskjed: *"Vi har mottatt registreringen og tar kontakt innen 1–2 virkedager for å klargjøre prøveperioden."* Ingen interne tekniske detaljer lekkes.
-2. **Administrasjonsgrensesnitt**:
-   - Åpnes via diskret snarvei (`Shift + Alt + A`) eller URL-parameter (`?admin=true`).
-   - Låseskjerm med passordfelt.
-   - Ved godkjenning: Dashbord med statusmerking (`Ny`, `Kontaktet`, `Aktiv`, `Avslått`), notatblokk for oppfølging og sanntidsstatistikk.
+### A. Utløserknapp i toppstripen
+I den mørke topplinjen i `ChurchDemoView` legges det til en tydelig fremhevet knapp:
+- **«Guidet omvisning»** med et glødende kompass/play-ikon og diskret pulserende indikator som inviterer til utforskning.
 
----
+### B. Den flytende omvisningskontrolleren (HUD)
+Under avspilling vises et elegant, flytende kontrollpanel sentrert nederst i visningsvinduet med:
+1. **Trinnindikator**: Viser aktivt trinn (f.eks. «Trinn 2 av 4: Enkelt CMS (Nivå 1)»).
+2. **Animert fremdriftslinje**: Viser gjenværende tid på gjeldende trinn (f.eks. 7 sekunder) med myk CSS-animasjon.
+3. **Avspillingskontroller**:
+   - **Pause / Spill av** (veksler automatisk tidsur).
+   - **Forrige / Neste** (for å hoppe manuelt mellom stoppestedene).
+   - **Avslutt (Stopp / Kryss)** (lukker omvisningen og lar brukeren fortsette å utforske fritt der de er).
+4. **Hovedbudskap & forklarende bildetekst**: 1-2 konsise setninger som forklarer den praktiske verdien av det som vises på skjermen akkurat nå.
 
-## 3. Teknisk Sikkerhetsarkitektur
-
-### Forespørselsflyt & Beskyttelseslag
-
-```
-┌────────────────────────────────────────────────────────────────────────┐
-│                        OFFENTLIG KLIENT (Nettleser)                    │
-│                                                                        │
-│   Skjemainnsending (inkl. usynlig Honeypot-felt "website_company_hp")  │
-└───────────────────────────────────┬────────────────────────────────────┘
-                                    │ POST /api/registrations
-                                    ▼
-┌────────────────────────────────────────────────────────────────────────┐
-│                       EXPRESS BACKEND (server.ts)                      │
-│                                                                        │
-│   [Sikkerhetslag 1: Rate Limiter] -> Maks 5 per 15 min per IP          │
-│   [Sikkerhetslag 2: Honeypot-sjekk] -> Avvis hvis bot har fylt felt    │
-│   [Sikkerhetslag 3: Skjemavalidering] -> Gyldig e-post og obligatorisk │
-│                                                                        │
-│                 ┌─────────────────┴─────────────────┐                  │
-│                 ▼                                   ▼                  │
-│   [Firestore Server-klient]               [E-postvarsling]             │
-│   Skriver til /registrations/{id}         Sender til magnar.totland    │
-└─────────────────┬───────────────────────────────────┬──────────────────┘
-                  │                                   │
-                  ▼                                   ▼
-      Google Cloud Firestore               magnar.totland@gmail.com
-      (Stengt for offentlig klient)        (Varsel om ny registrering)
-```
-
-### Autentiseringsflyt for Admin
+### C. De 4 stoppestedene i sekvensen
 
 ```
-Magnar taster passord -> POST /api/admin/verify -> Server sjekker process.env.ADMIN_PASSWORD
-                                                -> Setter Set-Cookie: admin_session=...; HttpOnly; SameSite=Strict; Secure
-                                                -> Returnerer { success: true }
-
-GET /api/registrations -> Express requireAdminAuth sjekker HttpOnly-cookie
-                       -> Henter registreringer fra Firestore
-                       -> Returnerer kun til verifisert administrator
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ TRINN 1: Offentlig nettside (Nivå 1 - Gratis)                              │
+│ ‣ Setter visning til 'public', nivå til 1                                   │
+│ ‣ Fokus: Moderne responsiv nettside, prekenarkiv, kalender & enkel Min Side │
+└──────────────────────────────────────┬──────────────────────────────────────┘
+                                       │ (automatisk overgang etter 7 sek)
+                                       ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ TRINN 2: Enkelt CMS & Redigering (Nivå 1 - Gratis)                         │
+│ ‣ Bytter visning til 'admin', nivå til 1, fane 'forside'                   │
+│ ‣ Fokus: Enkel innholdsredigering for menighetens stab uten kodekunnskap     │
+└──────────────────────────────────────┬──────────────────────────────────────┘
+                                       │ (automatisk overgang etter 7 sek)
+                                       ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ TRINN 3: Oppgradering til Nivå 2 – Vaktplan & Bemanning (499,-/mnd)        │
+│ ‣ Animerer nivået til 2, åpner fane 'plan' i administrasjonen               │
+│ ‣ Fokus: Komplett gudstjenestebemanning, roller, bekreftelser & frivillige   │
+└──────────────────────────────────────┬──────────────────────────────────────┘
+                                       │ (automatisk overgang etter 7 sek)
+                                       ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ TRINN 4: Forfallshåndtering & Frivillig Min Side (Nivå 2)                   │
+│ ‣ Bytter til 'forfall'-oversikt og demonstrerer frivillig-arbeidsflyten     │
+│ ‣ Fokus: Frivillige melder forfall på sekunder, leder finner vikar med ett  │
+│   klikk. Avsluttes med handlingsknapp «Prøv gratis i 30 dager».              │
+└─────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 4. Test- og Verifiseringsplan (Ende-til-ende)
+## 3. Teknisk arkitektur & komponentdesign
 
-Under gjennomføringen vil vi utføre og dokumentere:
-1. **Bot-test**: Sende forespørsel med honeypot-felt for å verifisere at spam avvises umiddelbart.
-2. **Uautorisert test**: Sende `GET /api/registrations` uten cookie for å verifisere `HTTP 401 Unauthorized`.
-3. **Ekte registrering**: Sende inn en gyldig prøveperiode-registrering fra nettsiden.
-4. **Firestore-bekreftelse**: Kontrollere at registreringen finnes med full struktur i Firestore.
-5. **E-postverifisering**: Kontrollere at varslingsforespørselen til `magnar.totland@gmail.com` er utført og logget.
-6. **Admin-innlogging**: Logge inn med admin-passord, motta HttpOnly cookie, verifisere at registreringen vises i tabellen, og endre status til `Kontaktet`.
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ ChurchDemoView (State Container & Viewport)                                 │
+│  - isOpen, onClose, onStartTrial                                            │
+│  - activeView ('public' | 'admin')                                          │
+│  - level (1 | 2)                                                            │
+│  - isTourActive (boolean)                                                   │
+│                                                                             │
+│  ┌───────────────────────────────────────────────────────────────────────┐  │
+│  │ Top Control Bar                                                       │  │
+│  │ [Se gratis] [Se 499,-]  [Nettside | Admin]  [▶ Guidet omvisning]  [X] │  │
+│  └───────────────────────────────────────────────────────────────────────┘  │
+│                                                                             │
+│  ┌─────────────────────────────────┐   ┌─────────────────────────────────┐  │
+│  │ DemoPublicWebsite               │   │ DemoAdminCms                    │  │
+│  │ (Styres automatisk av turen)    │   │ (Styres automatisk av turen)    │  │
+│  └─────────────────────────────────┘   └─────────────────────────────────┘  │
+│                                                                             │
+│  ┌───────────────────────────────────────────────────────────────────────┐  │
+│  │ DemoGuidedTour HUD (Overlay nederst)                                  │  │
+│  │ [⏪ Forrige] [⏸ Pause / ▶ Spill] [⏩ Neste] [Fremdriftsbar] [Avslutt] │  │
+│  └───────────────────────────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### Komponenter og filstruktur:
+- **`src/components/demo/DemoGuidedTour.tsx`**:
+  - Ny dedikert komponent for den flytende omvisningslinjen.
+  - Håndterer automatisk intervall-tidsur (f.eks. `setInterval` eller `requestAnimationFrame`), tidsindikator, pause/spill av, hopp til trinn og pen lysmarkering/spotlight rundt relevante seksjoner.
+- **`src/components/ChurchDemoView.tsx`**:
+  - Legger til knapp for å starte omvisningen i headeren.
+  - Integrerer `DemoGuidedTour` når omvisningen er aktiv.
+  - Lar omvisningen kalle `handleLevelChange` og `handleViewModeChange` samt styre aktiv fane i admin.
+
+---
+
+## 4. Akseptansekriterier & verifisering
+
+- [ ] Knappen **«Guidet omvisning»** er synlig og tiltalende i topplinjen til `ChurchDemoView`.
+- [ ] Ved klikk starter en automatisk spillende omvisning gjennom de 4 definerte stoppestedene.
+- [ ] Brukeren kan når som helst sette på **Pause**, trykke **Spill av**, hoppe med **Forrige / Neste** eller **Avslutte**.
+- [ ] Omvisningen demonstrerer tydelig overgangen fra Nivå 1 (Gratis nettside og CMS) til Nivå 2 (Vaktplan, bemanning og forfallshåndtering).
+- [ ] Når omvisningen avsluttes eller fullføres, forblir brukeren i demoen uten å miste tilstanden sin.
+- [ ] Ingen TypeScript- eller buildfeil (`npm run build` fullføres feilfritt).

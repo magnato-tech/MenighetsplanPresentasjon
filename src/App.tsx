@@ -13,7 +13,7 @@ import { FaqSection } from './components/FaqSection';
 import { CtaSection } from './components/CtaSection';
 import { Footer } from './components/Footer';
 import { OnboardingModal } from './components/OnboardingModal';
-import { ExternalDemoModal } from './components/ExternalDemoModal';
+import { ChurchDemoView } from './components/ChurchDemoView';
 import { AdminRegistrationsModal } from './components/AdminRegistrationsModal';
 
 export default function App() {
@@ -27,6 +27,9 @@ export default function App() {
     const params = new URLSearchParams(window.location.search);
     if (params.get('admin') === 'true' || window.location.hash === '#admin') {
       setAdminOpen(true);
+    }
+    if (params.get('demo') === 'true' || window.location.hash === '#demo') {
+      setDemoOpen(true);
     }
 
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -124,11 +127,11 @@ export default function App() {
         initialPlan={onboardingTopic}
       />
 
-      {/* Ekstern Demo-kobling til demo.menighetsplan.no */}
-      <ExternalDemoModal
+      {/* «Bygg din egen menighet» – Fullskjerms Interaktiv Demo */}
+      <ChurchDemoView
         isOpen={demoOpen}
         onClose={() => setDemoOpen(false)}
-        onStartTrial={() => handleOpenOnboarding('demo-to-trial')}
+        onStartTrial={(plan) => handleOpenOnboarding(plan || 'level_2_trial')}
       />
 
       {/* Sentral administratorvisning for mottatte registreringer */}
