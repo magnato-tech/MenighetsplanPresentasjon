@@ -25,16 +25,19 @@ function parseServiceAccount(raw) {
   } catch {
     throw new Error('CRM_FIREBASE_SERVICE_ACCOUNT må være gyldig JSON.');
   }
+  if (typeof parsed.private_key === 'string') {
+    parsed.private_key = parsed.private_key.replace(/\\n/g, '\n');
+  }
+  if (typeof parsed.privateKey === 'string') {
+    parsed.privateKey = parsed.privateKey.replace(/\\n/g, '\n');
+  }
   const projectId = parsed.project_id || parsed.projectId;
   const clientEmail = parsed.client_email || parsed.clientEmail;
-  let privateKey = parsed.private_key || parsed.privateKey;
-  if (typeof privateKey === 'string') {
-    privateKey = privateKey.replace(/\\n/g, '\n');
-  }
+  const privateKey = parsed.private_key || parsed.privateKey;
   if (!projectId || !clientEmail || !privateKey) {
     throw new Error('CRM_FIREBASE_SERVICE_ACCOUNT mangler påkrevde felt.');
   }
-  return { projectId, clientEmail, privateKey };
+  return parsed;
 }
 
 function getDb() {
@@ -46,7 +49,7 @@ function getDb() {
     throw new Error('CRM Firestore er ikke konfigurert.');
   }
 
-  const credentials = parseServiceAccount(raw);
+  const serviceAccount = parseServiceAccount(raw);
   const databaseId = normalizeEnvValue(process.env.CRM_FIRESTORE_DATABASE_ID) || '(default)';
 
   const existing = getApps().find((app) => app.name === CRM_APP_NAME);
@@ -54,7 +57,7 @@ function getDb() {
     existing ??
     initializeApp(
       {
-        credential: cert(credentials),
+        credential: cert(serviceAccount),
         projectId,
       },
       CRM_APP_NAME
@@ -62,6 +65,10 @@ function getDb() {
 
   crmDb = initializeFirestore(app, { preferRest: true }, databaseId);
   return crmDb;
+}
+
+function stripUndefined(value) {
+  return JSON.parse(JSON.stringify(value));
 }
 
 async function listCustomers() {
@@ -77,7 +84,7 @@ async function listCustomers() {
 
 async function createCustomer(record) {
   const db = getDb();
-  await db.collection(CUSTOMERS_COLLECTION).doc(record.id).set(record);
+  await db.collection(CUSTOMERS_COLLECTION).doc(record.id).set(stripUndefined(record));
 }
 
 async function updateCustomer(id, patch) {
