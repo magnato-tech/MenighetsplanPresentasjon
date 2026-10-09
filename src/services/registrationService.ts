@@ -33,11 +33,14 @@ export async function verifyAdminPassword(password: string): Promise<{ success: 
       credentials: 'include',
       body: JSON.stringify({ password }),
     });
-    const data = await res.json();
+    const data = await res.json().catch(() => ({} as { success?: boolean; error?: string }));
     if (res.ok && data.success) {
       return { success: true };
     }
-    return { success: false, error: data.error || 'Feil passord' };
+    return {
+      success: false,
+      error: data.error || (res.ok ? 'Feil passord' : 'Kunne ikke koble til server for verifisering'),
+    };
   } catch {
     return { success: false, error: 'Kunne ikke koble til server for verifisering' };
   }

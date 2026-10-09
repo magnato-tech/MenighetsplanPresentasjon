@@ -28,9 +28,13 @@ async function runVercelHandler(
   res: VercelResponse,
   runner: () => JsonResult | Promise<JsonResult>
 ): Promise<void> {
-  const secure = isSecureRequest(req.headers);
-  const result = await runner();
-  sendJson(res, result, secure);
+  try {
+    const secure = isSecureRequest(req.headers);
+    const result = await runner();
+    sendJson(res, result, secure);
+  } catch {
+    res.status(500).json({ success: false, error: 'Serverfeil. Prøv igjen.' });
+  }
 }
 
 function sessionFromReq(req: VercelRequest): string | undefined {

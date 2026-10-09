@@ -1,12 +1,6 @@
 import { isAdminAuthorized, validateAdminPassword } from './auth';
-import {
-  buildCustomerFromBody,
-  createCustomer,
-  listCustomers,
-  updateCustomer,
-  validateRegistrationBody,
-} from './customers';
-import { isCrmDbReady, pingCrmFirestore } from './firestore';
+import { isCrmFirestoreConfigured } from './config';
+import { buildCustomerFromBody, validateRegistrationBody } from './registrationPayload';
 import { adminHostForbidden, isAdminApiHost } from './hostPolicy';
 import {
   checkRegistrationRateLimit,
@@ -40,15 +34,25 @@ function forbiddenHost(): JsonResult {
 }
 
 export async function handleHealth(): Promise<JsonResult> {
-  const ping = await pingCrmFirestore();
+  const configured = isCrmFirestoreConfigured();
+  let reachable = false;
+  if (configured) {
+    try {
+      const { pingCrmFirestore } = await import('./firestore.js');
+      const ping = await pingCrmFirestore();
+      reachable = ping.reachable;
+    } catch {
+      reachable = false;
+    }
+  }
   return {
     status: 200,
     body: {
-      status: ping.reachable ? 'ok' : 'degraded',
+      status: reachable ? 'ok' : 'degraded',
       firestore: {
         check: 'connection',
-        configured: ping.configured,
-        reachable: ping.reachable,
+        configured,
+        reachable,
       },
       time: new Date().toISOString(),
     },
@@ -82,12 +86,19 @@ export function handleAdminLogin(
   }
 
   clearLoginAttempts(clientIp);
-  const token = createAdminSessionToken();
-  return {
-    status: 200,
-    body: { success: true, message: 'Innlogget som administrator' },
-    setCookie: token,
-  };
+  try {
+    const token = createAdminSessionToken();
+    return {
+      status: 200,
+      body: { success: true, message: 'Innlogget som administrator' },
+      setCookie: token,
+    };
+  } catch {
+    return {
+      status: 500,
+      body: { success: false, error: 'Administrator-innlogging er ikke konfigurert.' },
+    };
+  }
 }
 
 export function handleAdminCheck(
@@ -116,13 +127,14 @@ export async function handleListRegistrations(
 ): Promise<JsonResult> {
   if (!isAdminApiHost(host)) return forbiddenHost();
   if (!isAdminAuthorized(sessionToken)) return unauthorized();
-  if (!isCrmDbReady()) {
+  if (!isCrmFirestoreConfigured()) {
     return {
       status: 500,
       body: { success: false, error: 'CRM Firestore er ikke konfigurert' },
     };
   }
   try {
+    const { listCustomers } = await import('./customers.js');
     const registrations = await listCustomers();
     return {
       status: 200,
@@ -164,7 +176,7 @@ export async function handleCreateRegistration(
     return { status: 400, body: { success: false, error: validationError } };
   }
 
-  if (!isCrmDbReady()) {
+  if (!isCrmFirestoreConfigured()) {
     return {
       status: 500,
       body: { success: false, error: 'Kunne ikke lagre registreringen i databasen' },
@@ -172,6 +184,7 @@ export async function handleCreateRegistration(
   }
 
   try {
+    const { createCustomer } = await import('./customers.js');
     const newRegistration = buildCustomerFromBody(body);
     await createCustomer(newRegistration);
     return {
@@ -199,13 +212,14 @@ export async function handlePatchRegistration(
 ): Promise<JsonResult> {
   if (!isAdminApiHost(host)) return forbiddenHost();
   if (!isAdminAuthorized(sessionToken)) return unauthorized();
-  if (!isCrmDbReady()) {
+  if (!isCrmFirestoreConfigured()) {
     return {
       status: 500,
       body: { success: false, error: 'CRM Firestore er ikke konfigurert' },
     };
   }
   try {
+    const { updateCustomer } = await import('./customers.js');
     const updated = await updateCustomer(id, body);
     if (!updated) {
       return { status: 404, body: { success: false, error: 'Registrering ikke funnet' } };

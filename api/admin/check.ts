@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { vercelAdminCheck } from '../../lib/crm/vercel';
+import { vercelAdminCheck } from '../../lib/crm/vercelAuth';
 
 export default function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'GET') {

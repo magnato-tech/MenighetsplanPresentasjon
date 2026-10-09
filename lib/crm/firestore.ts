@@ -1,5 +1,5 @@
 import { cert, getApps, initializeApp, type ServiceAccount } from 'firebase-admin/app';
-import { getFirestore, type Firestore } from 'firebase-admin/firestore';
+import { initializeFirestore, type Firestore } from 'firebase-admin/firestore';
 import { CUSTOMERS_COLLECTION, getCrmDatabaseId, getCrmProjectId, isCrmFirestoreConfigured } from './config.js';
 
 const HEALTH_PING_TIMEOUT_MS = 4000;
@@ -58,7 +58,7 @@ export function getCrmDb(): Firestore {
       CRM_APP_NAME
     );
 
-  crmDb = getFirestore(app, getCrmDatabaseId());
+  crmDb = initializeFirestore(app, { preferRest: true }, getCrmDatabaseId());
   return crmDb;
 }
 
