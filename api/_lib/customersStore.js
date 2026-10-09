@@ -1,8 +1,6 @@
-const { cert, getApps, initializeApp } = require('firebase-admin/app');
-const { initializeFirestore } = require('firebase-admin/firestore');
+const { Firestore } = require('@google-cloud/firestore');
 
 const CUSTOMERS_COLLECTION = 'customers';
-const CRM_APP_NAME = 'menighetsplan-crm';
 
 let crmDb = null;
 
@@ -18,26 +16,20 @@ function isFirestoreConfigured() {
   );
 }
 
-function parseServiceAccount(raw) {
-  let parsed;
+function parseCredentials(raw) {
+  let credentials;
   try {
-    parsed = JSON.parse(raw);
+    credentials = JSON.parse(raw);
   } catch {
     throw new Error('CRM_FIREBASE_SERVICE_ACCOUNT må være gyldig JSON.');
   }
-  if (typeof parsed.private_key === 'string') {
-    parsed.private_key = parsed.private_key.replace(/\\n/g, '\n');
+  if (typeof credentials.private_key === 'string') {
+    credentials.private_key = credentials.private_key.replace(/\\n/g, '\n');
   }
-  if (typeof parsed.privateKey === 'string') {
-    parsed.privateKey = parsed.privateKey.replace(/\\n/g, '\n');
+  if (typeof credentials.privateKey === 'string') {
+    credentials.privateKey = credentials.privateKey.replace(/\\n/g, '\n');
   }
-  const projectId = parsed.project_id || parsed.projectId;
-  const clientEmail = parsed.client_email || parsed.clientEmail;
-  const privateKey = parsed.private_key || parsed.privateKey;
-  if (!projectId || !clientEmail || !privateKey) {
-    throw new Error('CRM_FIREBASE_SERVICE_ACCOUNT mangler påkrevde felt.');
-  }
-  return parsed;
+  return credentials;
 }
 
 function getDb() {
@@ -49,21 +41,15 @@ function getDb() {
     throw new Error('CRM Firestore er ikke konfigurert.');
   }
 
-  const serviceAccount = parseServiceAccount(raw);
+  const credentials = parseCredentials(raw);
   const databaseId = normalizeEnvValue(process.env.CRM_FIRESTORE_DATABASE_ID) || '(default)';
 
-  const existing = getApps().find((app) => app.name === CRM_APP_NAME);
-  const app =
-    existing ??
-    initializeApp(
-      {
-        credential: cert(serviceAccount),
-        projectId,
-      },
-      CRM_APP_NAME
-    );
+  crmDb = new Firestore({
+    projectId,
+    databaseId,
+    credentials,
+  });
 
-  crmDb = initializeFirestore(app, { preferRest: true }, databaseId);
   return crmDb;
 }
 

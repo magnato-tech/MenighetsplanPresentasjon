@@ -85,13 +85,18 @@ module.exports = async function handler(req, res) {
         return;
       }
 
-      const newRegistration = buildCustomerFromBody(body);
-      await createCustomer(newRegistration);
-      res.status(201).json({
-        success: true,
-        message: 'Registrering er mottatt og lagret i CRM.',
-        registration: newRegistration,
-      });
+      try {
+        const newRegistration = buildCustomerFromBody(body);
+        await createCustomer(newRegistration);
+        res.status(201).json({
+          success: true,
+          message: 'Registrering er mottatt og lagret i CRM.',
+          registration: newRegistration,
+        });
+      } catch (writeErr) {
+        console.error('createCustomer failed', writeErr && writeErr.message);
+        res.status(500).json({ success: false, error: 'Kunne ikke lagre registreringen i databasen' });
+      }
       return;
     }
 
