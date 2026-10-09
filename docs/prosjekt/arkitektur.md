@@ -23,12 +23,15 @@ Prosjekt **`menighetsplan-crm`**, database **`(default)`**, samling **`customers
 
 1. Honeypot `hp_company_url`
 2. Rate limit per IP
-3. Validering → `createCustomer` i Firestore
+3. Validering → `createCustomer` i Firestore (`customers`)
+4. Bekreftelses-e-post via Resend ([`api/_lib/registrationEmail.js`](../../api/_lib/registrationEmail.js)); resultat lagres på kunden og vises på kundekortet i CRM
+
+Bestillingen beholdes om e-post feiler.
 
 ## Admin
 
 - Signert HttpOnly-cookie `mp_admin_token` (24 t), HMAC med `ADMIN_SESSION_SECRET` eller `ADMIN_PASSWORD`
 - `POST /api/admin/login`, `GET /api/admin/check`, `POST /api/admin/logout`, `GET/PATCH /api/registrations` — kun CRM-host
-- Ingen e-postvarsling (FormSubmit fjernet)
+- Ingen automatisk varsel til eier ved ny kunde (planlagt; krever Resend)
 
-Se [CRM_SETUP.md](../CRM_SETUP.md) for Vercel-domene og env.
+Se [CRM_SETUP.md](../CRM_SETUP.md) og [PRODUCTION.md](../PRODUCTION.md) for Vercel, env og Resend-domene.

@@ -22,10 +22,27 @@ Påmeldinger fra **www.menighetsplan.no** lagres i Firestore-prosjektet **`menig
 | `CRM_FIREBASE_SERVICE_ACCOUNT` | Hele JSON-filen på én linje |
 | `ADMIN_PASSWORD` | Passord for CRM-innlogging |
 | `ADMIN_SESSION_SECRET` | Valgfritt, anbefalt i produksjon |
-| `RESEND_API_KEY` | API-nøkkel fra [Resend](https://resend.com) for bekreftelses-e-post ved bestilling |
-| `REGISTRATION_EMAIL_FROM` | Avsender, f.eks. `Menighetsplan <hei@menighetsplan.no>` (domene må være verifisert i Resend) |
+| `RESEND_API_KEY` | API-nøkkel fra Resend → **API Keys** (`re_…`) |
+| `REGISTRATION_EMAIL_FROM` | Avsender på **verifisert** domene, f.eks. `Menighetsplan <hei@menighetsplan.no>` |
+
+**Viktig:** `CRM_FIREBASE_SERVICE_ACCOUNT` må være **Firebase JSON** (starter med `{`), ikke Stripe-nøkkel eller `ADMIN_PASSWORD`.
 
 Uten `RESEND_API_KEY` lagres bestillingen, men kunden får ikke e-post og CRM viser «Bekreftelse ikke sendt».
+
+### 2b. Bekreftelses-e-post (Resend)
+
+Resend krever **API key + verifisert domene** ([dokumentasjon](https://resend.com/docs/dashboard/domains/introduction)).
+
+1. [resend.com](https://resend.com) → konto (gratis nivå: ca. 3 000 e-poster/mnd).
+2. **API Keys** → opprett nøkkel → `RESEND_API_KEY` i Vercel (Production).
+3. **Domains** → **Add Domain** → `menighetsplan.no` (eller underdomene, f.eks. `send.menighetsplan.no`).
+4. Legg DNS-postene Resend viser hos domeneleverandør → vent til **Verified**.
+5. `REGISTRATION_EMAIL_FROM` = adresse på det verifiserte domenet.
+6. **Redeploy** på Vercel.
+
+Etter vellykket bestilling: logg på **kundekortet til høyre** i CRM (grønn/rød). Venstre liste endres ikke.
+
+Se også [PRODUCTION.md](PRODUCTION.md) for drift og feilsøking.
 
 ## 3. Firestore-regler
 
@@ -53,8 +70,9 @@ Frontend velger app via host ([`src/utils/appHost.ts`](../src/utils/appHost.ts))
 
 1. `GET https://www.menighetsplan.no/api/health` → `"status": "ok"` og `"firestore": { "check": "connection", "configured": true, "reachable": true }`. Endepunktet pinger Firestore; det returnerer ikke hemmeligheter eller interne feilmeldinger.
 2. Send inn skjema på www → nytt dokument i `customers`
-3. `https://crm.menighetsplan.no` → logg inn → se kunden
+3. `https://crm.menighetsplan.no` → logg inn → se kunden (status + evt. bekreftelseslogg)
 4. `POST https://www.menighetsplan.no/api/admin/login` → **403** (admin-API kun på CRM-host)
+5. Med Resend konfigurert: ny bestilling → grønn «Bekreftelse sendt» på kundekortet
 
 ## Lokal utvikling
 

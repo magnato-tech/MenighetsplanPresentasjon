@@ -4,7 +4,7 @@
 
 ## `ChurchRegistration`
 
-Definert i `src/types/registration.ts`. Lagres som dokument i `registrations`.
+Definert i `src/types/registration.ts`. Lagres som dokument i Firestore-samlingen **`customers`**.
 
 | Felt | Betydning |
 |------|-----------|
@@ -27,6 +27,9 @@ Definert i `src/types/registration.ts`. Lagres som dokument i `registrations`.
 | `sourceUrl` | Side som sendte inn |
 | `status` | Oppfølging |
 | `adminNotes` | Internt, satt i admin |
+| `confirmationEmailAt` | ISO-tid for sist forsøk på bekreftelses-e-post |
+| `confirmationEmailOk` | `true` sendt, `false` feilet |
+| `confirmationEmailFailedAt` | Settes ved feil (valgfritt) |
 | `updatedAt` | Settes ved PATCH, ikke i type-fila |
 
 Innsending (`RegistrationSubmitPayload`) har samme felter pluss honeypot `hp_company_url`, som ikke lagres.

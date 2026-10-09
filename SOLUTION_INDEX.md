@@ -10,7 +10,7 @@
 
 **Stack:** React 19, Vite 8, TypeScript, Tailwind 4, Express (lokal), Vercel `api/`, Firebase Admin SDK via [`lib/crm/`](lib/crm/).
 
-Dypere dokumentasjon: [docs/prosjekt/README.md](docs/prosjekt/README.md), [docs/CRM_SETUP.md](docs/CRM_SETUP.md).
+Dypere dokumentasjon: [docs/PRODUCTION.md](docs/PRODUCTION.md) (drift), [docs/CRM_SETUP.md](docs/CRM_SETUP.md), [docs/prosjekt/README.md](docs/prosjekt/README.md).
 
 ## Data
 
