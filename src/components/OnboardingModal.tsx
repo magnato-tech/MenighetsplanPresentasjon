@@ -23,13 +23,16 @@ import { ChurchRegistration } from '../types/registration';
 
 const TOTAL_STEPS = 4;
 
+const COMING_SOON_HINT =
+  'Ønsker dere denne? Si ifra her, så prioriterer vi den raskt.';
+
 const MODULE_OPTIONS = [
-  { id: 'utleie', label: 'Utleie' },
-  { id: 'givertjeneste', label: 'Givertjeneste' },
-  { id: 'arrangement', label: 'Arrangement' },
-  { id: 'kommunikasjon', label: 'SMS / E-post' },
-  { id: 'skjemaer', label: 'Skjemaer' },
-  { id: 'analyse', label: 'Analyse' },
+  { id: 'utleie', label: 'Utleie', comingSoon: true },
+  { id: 'givertjeneste', label: 'Givertjeneste', comingSoon: true },
+  { id: 'arrangement', label: 'Arrangement', comingSoon: true },
+  { id: 'kommunikasjon', label: 'SMS / E-post', comingSoon: true },
+  { id: 'skjemaer', label: 'Skjemaer', comingSoon: true },
+  { id: 'analyse', label: 'Analyse', comingSoon: true },
 ];
 
 interface OnboardingModalProps {
@@ -162,11 +165,34 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
     setStep((s) => Math.max(1, s - 1));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const err = validateStep(4);
-    if (err) {
-      setStepError(err);
+    const form = e.currentTarget;
+    const data = new FormData(form);
+    const nameFromForm = String(data.get('contactName') ?? '').trim();
+    const emailFromForm = String(data.get('email') ?? '').trim();
+    const phoneFromForm = String(data.get('phone') ?? '').trim();
+    const roleFromForm = String(data.get('roleTitle') ?? '').trim();
+    const resolvedContactName = nameFromForm || contactName.trim();
+    const resolvedEmail = emailFromForm || email.trim();
+    const resolvedPhone = phoneFromForm || phone.trim();
+    const resolvedRole = roleFromForm || roleTitle.trim();
+
+    if (resolvedContactName !== contactName) setContactName(resolvedContactName);
+    if (resolvedEmail !== email) setEmail(resolvedEmail);
+    if (resolvedPhone !== phone) setPhone(resolvedPhone);
+    if (resolvedRole !== roleTitle) setRoleTitle(resolvedRole);
+
+    if (!resolvedContactName) {
+      setStepError('Skriv inn kontaktperson.');
+      return;
+    }
+    if (!resolvedEmail) {
+      setStepError('Skriv inn e-postadresse.');
+      return;
+    }
+    if (startDateOption === 'custom' && !customDate) {
+      setStepError('Velg ønsket dato.');
       return;
     }
 
@@ -176,10 +202,10 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
     try {
       const result = await submitRegistration({
         churchName,
-        contactName,
-        roleTitle,
-        email,
-        phone,
+        contactName: resolvedContactName,
+        roleTitle: resolvedRole,
+        email: resolvedEmail,
+        phone: resolvedPhone,
         subdomainSlug: slug,
         churchSize: getChurchSizeLabel(),
         desiredStartDate: getStartDateLabel(),
@@ -342,24 +368,44 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
               {step === 2 && (
                 <div className="space-y-3 animate-in fade-in duration-200">
                   <p className="text-xs text-slate-600">
-                    Ønsker dere å teste noen tilleggsmoduler i prøveperioden? (Valgfritt — 99 kr/mnd per modul etter prøve.)
+                    Tilleggsmodulene er under utvikling. Marker gjerne interesse — det hjelper oss å prioritere. (Valgfritt — 99 kr/mnd per modul når de er klare.)
                   </p>
                   <div className="grid grid-cols-2 gap-2 text-xs">
-                    {MODULE_OPTIONS.map((mod) => (
-                      <button
-                        key={mod.id}
-                        type="button"
-                        onClick={() => toggleModule(mod.id)}
-                        className={`p-3 rounded-xl border text-left transition-colors cursor-pointer ${
-                          interestedModules.includes(mod.id)
-                            ? 'border-[#1A382B] bg-[#1A382B] text-white font-medium'
-                            : 'border-slate-200 hover:bg-slate-50 text-slate-700'
-                        }`}
-                      >
-                        {mod.label}
-                        <span className="block text-[10px] opacity-80 mt-0.5">99 kr/mnd</span>
-                      </button>
-                    ))}
+                    {MODULE_OPTIONS.map((mod) => {
+                      const selected = interestedModules.includes(mod.id);
+                      return (
+                        <button
+                          key={mod.id}
+                          type="button"
+                          onClick={() => toggleModule(mod.id)}
+                          aria-label={
+                            mod.comingSoon
+                              ? `${mod.label} (kommer). ${COMING_SOON_HINT}`
+                              : mod.label
+                          }
+                          title={mod.comingSoon ? COMING_SOON_HINT : undefined}
+                          className={`p-3 rounded-xl border text-left transition-colors cursor-pointer ${
+                            selected
+                              ? 'border-[#1A382B] bg-[#1A382B] text-white font-medium'
+                              : 'border-slate-200 hover:bg-slate-50 text-slate-700'
+                          }`}
+                        >
+                          <span className="flex items-baseline gap-1 flex-wrap">
+                            {mod.label}
+                            {mod.comingSoon && (
+                              <span
+                                className={`text-[10px] font-semibold ${
+                                  selected ? 'text-white/80' : 'text-slate-400'
+                                }`}
+                              >
+                                (kommer)
+                              </span>
+                            )}
+                          </span>
+                          <span className="block text-[10px] opacity-80 mt-0.5">99 kr/mnd</span>
+                        </button>
+                      );
+                    })}
                   </div>
                   {interestedModules.length === 0 && (
                     <p className="text-[11px] text-slate-400">Du kan hoppe over dette steget med Neste.</p>
@@ -437,10 +483,15 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
                         <User className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
                         <input
                           type="text"
-                          placeholder="Ola Nordmann"
+                          name="contactName"
+                          autoComplete="name"
+                          placeholder="Fornavn Etternavn"
                           value={contactName}
-                          onChange={(e) => setContactName(e.target.value)}
-                          className="w-full pl-9 pr-3 py-2.5 text-sm border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1A382B]"
+                          onChange={(e) => {
+                            setContactName(e.target.value);
+                            if (stepError) setStepError(null);
+                          }}
+                          className="w-full pl-9 pr-3 py-2.5 text-sm border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1A382B] placeholder:text-slate-400"
                         />
                       </div>
                     </div>
@@ -448,10 +499,12 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
                       <label className="block text-xs font-semibold text-slate-700 mb-1">Rolle</label>
                       <input
                         type="text"
+                        name="roleTitle"
+                        autoComplete="organization-title"
                         placeholder="Pastor, leder …"
                         value={roleTitle}
                         onChange={(e) => setRoleTitle(e.target.value)}
-                        className="w-full px-3 py-2.5 text-sm border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1A382B]"
+                        className="w-full px-3 py-2.5 text-sm border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1A382B] placeholder:text-slate-400"
                       />
                     </div>
                   </div>
@@ -463,10 +516,15 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
                         <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
                         <input
                           type="email"
+                          name="email"
+                          autoComplete="email"
                           placeholder="post@menighet.no"
                           value={email}
-                          onChange={(e) => setEmail(e.target.value)}
-                          className="w-full pl-9 pr-3 py-2.5 text-sm border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1A382B]"
+                          onChange={(e) => {
+                            setEmail(e.target.value);
+                            if (stepError) setStepError(null);
+                          }}
+                          className="w-full pl-9 pr-3 py-2.5 text-sm border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1A382B] placeholder:text-slate-400"
                         />
                       </div>
                     </div>
@@ -476,10 +534,12 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({
                         <Phone className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
                         <input
                           type="tel"
+                          name="phone"
+                          autoComplete="tel"
                           placeholder="Mobilnummer"
                           value={phone}
                           onChange={(e) => setPhone(e.target.value)}
-                          className="w-full pl-9 pr-3 py-2.5 text-sm border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1A382B]"
+                          className="w-full pl-9 pr-3 py-2.5 text-sm border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#1A382B] placeholder:text-slate-400"
                         />
                       </div>
                     </div>
