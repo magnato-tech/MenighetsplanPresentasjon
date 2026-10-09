@@ -41,8 +41,12 @@ function getDb() {
     throw new Error('CRM Firestore er ikke konfigurert.');
   }
 
-  const credentials = parseCredentials(raw);
+  const parsed = parseCredentials(raw);
   const databaseId = normalizeEnvValue(process.env.CRM_FIRESTORE_DATABASE_ID) || '(default)';
+  const credentials = {
+    client_email: parsed.client_email || parsed.clientEmail,
+    private_key: parsed.private_key || parsed.privateKey,
+  };
 
   crmDb = new Firestore({
     projectId,
