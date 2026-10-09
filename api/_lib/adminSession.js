@@ -3,9 +3,18 @@ const crypto = require('node:crypto');
 const ADMIN_COOKIE = 'mp_admin_token';
 const SESSION_TTL_MS = 24 * 60 * 60 * 1000;
 
-function sessionSecret() {
-  return process.env.ADMIN_SESSION_SECRET || process.env.ADMIN_PASSWORD || '';
+function normalizeEnvValue(value) {
+  if (value == null) return '';
+  return String(value).replace(/\r\n/g, '\n').trim();
 }
+
+function sessionSecret() {
+  const explicit = normalizeEnvValue(process.env.ADMIN_SESSION_SECRET);
+  if (explicit) return explicit;
+  return normalizeEnvValue(process.env.ADMIN_PASSWORD);
+}
+
+module.exports.normalizeEnvValue = normalizeEnvValue;
 
 function isCrmAdminHost(hostHeader) {
   if (!hostHeader) return false;

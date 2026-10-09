@@ -1,4 +1,9 @@
-const { createSessionToken, isCrmAdminHost, setCookieHeader } = require('../_lib/adminSession');
+const {
+  createSessionToken,
+  isCrmAdminHost,
+  normalizeEnvValue,
+  setCookieHeader,
+} = require('../_lib/adminSession');
 
 module.exports = function handler(req, res) {
   try {
@@ -14,8 +19,19 @@ module.exports = function handler(req, res) {
       return;
     }
 
-    const expected = process.env.ADMIN_PASSWORD;
-    const password = req.body && req.body.password;
+    const expected = normalizeEnvValue(process.env.ADMIN_PASSWORD);
+    const rawBody = req.body;
+    const body =
+      typeof rawBody === 'string'
+        ? (() => {
+            try {
+              return JSON.parse(rawBody);
+            } catch {
+              return {};
+            }
+          })()
+        : rawBody || {};
+    const password = normalizeEnvValue(body.password);
     if (!expected || !password || password !== expected) {
       res.status(401).json({ success: false, error: 'Feil passord' });
       return;
