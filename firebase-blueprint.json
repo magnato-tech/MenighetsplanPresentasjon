@@ -95,9 +95,9 @@
     }
   },
   "firestore": {
-    "/registrations/{registrationId}": {
+    "/customers/{customerId}": {
       "schema": "Registration",
-      "description": "Stores submitted trial registrations from menighetsplan.no"
+      "description": "CRM: trial registrations from menighetsplan.no (crm database)"
     }
   }
 }

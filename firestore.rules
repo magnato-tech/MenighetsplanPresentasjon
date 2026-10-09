@@ -2,15 +2,11 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // =========================================================================
-    // Salgssiden menighetsplan.no - Påmeldinger og forespørsler om prøveperiode
-    // =========================================================================
-    // Alle besøkende kan sende inn en registrering (create).
-    // Bare produkteiers innloggede Google-konto kan lese, endre og slette.
-    match /registrations/{regId} {
-      allow create: if true;
-      allow read, update, delete: if request.auth != null && 
-        request.auth.token.email == "magnar.totland@gmail.com";
+    // CRM for menighetsplan.no — kundepåmeldinger fra salgssiden.
+    // Klienter skal ikke lese eller oppdatere direkte; API bruker Admin SDK.
+    match /customers/{customerId} {
+      allow create: if false;
+      allow read, update, delete: if false;
     }
 
   }

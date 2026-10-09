@@ -3,10 +3,9 @@ import { Mail, Globe, Heart } from 'lucide-react';
 
 interface FooterProps {
   onOpenContact: (topic?: string) => void;
-  onOpenAdmin?: () => void;
 }
 
-export const Footer: React.FC<FooterProps> = ({ onOpenContact, onOpenAdmin }) => {
+export const Footer: React.FC<FooterProps> = ({ onOpenContact }) => {
   return (
     <footer className="bg-[#FAF7F2] text-slate-700 pt-16 pb-12 border-t border-[#1A382B]/10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -124,11 +123,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenContact, onOpenAdmin }) =>
         {/* Bottom copyright line */}
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-4">
           <div>
-            <span 
-              onClick={onOpenAdmin}
-              className={onOpenAdmin ? "cursor-default select-none" : ""}
-              title={onOpenAdmin ? "Trykk Shift+Alt+A eller legg til ?admin=true i adressefeltet for administrator-innlogging" : undefined}
-            >
+            <span>
               © {new Date().getFullYear()} Menighetsplan. Alle rettigheter reservert.
             </span>
           </div>
