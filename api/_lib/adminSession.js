@@ -14,8 +14,6 @@ function sessionSecret() {
   return normalizeEnvValue(process.env.ADMIN_PASSWORD);
 }
 
-module.exports.normalizeEnvValue = normalizeEnvValue;
-
 function isCrmAdminHost(hostHeader) {
   if (!hostHeader) return false;
   const host = String(hostHeader).split(':')[0].toLowerCase();
@@ -82,6 +80,7 @@ function clearCookieHeader() {
 
 module.exports = {
   ADMIN_COOKIE,
+  normalizeEnvValue,
   isCrmAdminHost,
   createSessionToken,
   verifySessionToken,

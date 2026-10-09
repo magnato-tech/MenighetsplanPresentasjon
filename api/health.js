@@ -4,6 +4,11 @@ module.exports = function handler(_req, res) {
   );
   res.status(200).json({
     status: 'ok',
+    admin: {
+      passwordConfigured: Boolean(
+        process.env.ADMIN_PASSWORD && String(process.env.ADMIN_PASSWORD).trim().length > 0
+      ),
+    },
     firestore: {
       check: 'config',
       configured,

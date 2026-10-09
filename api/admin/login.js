@@ -32,7 +32,14 @@ module.exports = function handler(req, res) {
           })()
         : rawBody || {};
     const password = normalizeEnvValue(body.password);
-    if (!expected || !password || password !== expected) {
+    if (!expected) {
+      res.status(503).json({
+        success: false,
+        error: 'ADMIN_PASSWORD er ikke satt på serveren. Lagre variabelen i Vercel (Production) og redeploy.',
+      });
+      return;
+    }
+    if (!password || password !== expected) {
       res.status(401).json({ success: false, error: 'Feil passord' });
       return;
     }
