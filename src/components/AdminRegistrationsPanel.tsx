@@ -31,6 +31,7 @@ export const AdminRegistrationsPanel: React.FC = () => {
   const [registrations, setRegistrations] = useState<ChurchRegistration[]>([]);
   const [loading, setLoading] = useState(false);
   const [selectedReg, setSelectedReg] = useState<ChurchRegistration | null>(null);
+  const [statusError, setStatusError] = useState<string | null>(null);
 
   const loadData = async () => {
     setLoading(true);
@@ -96,12 +97,16 @@ export const AdminRegistrationsPanel: React.FC = () => {
   };
 
   const handleStatusChange = async (id: string, newStatus: ChurchRegistration['status']) => {
-    const ok = await updateRegistrationStatus(id, newStatus);
-    if (ok) {
-      setRegistrations((prev) => prev.map((r) => (r.id === id ? { ...r, status: newStatus } : r)));
-      if (selectedReg && selectedReg.id === id) {
-        setSelectedReg((prev) => (prev ? { ...prev, status: newStatus } : null));
-      }
+    const previous = registrations.find((r) => r.id === id);
+    setStatusError(null);
+    setRegistrations((prev) => prev.map((r) => (r.id === id ? { ...r, status: newStatus } : r)));
+    setSelectedReg((prev) => (prev && prev.id === id ? { ...prev, status: newStatus } : prev));
+
+    const result = await updateRegistrationStatus(id, newStatus);
+    if (!result.ok && previous) {
+      setRegistrations((prev) => prev.map((r) => (r.id === id ? previous : r)));
+      setSelectedReg((prev) => (prev && prev.id === id ? previous : prev));
+      setStatusError(result.error || 'Kunne ikke lagre status.');
     }
   };
 
@@ -288,6 +293,12 @@ export const AdminRegistrationsPanel: React.FC = () => {
                   </select>
                 </div>
               </div>
+
+              {statusError && (
+                <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-red-800 text-[11px]">
+                  {statusError}
+                </div>
+              )}
 
               <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-[11px] flex items-start gap-2">
                 <Clock className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />

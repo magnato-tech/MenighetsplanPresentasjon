@@ -3,11 +3,22 @@ const {
   isCrmAdminHost,
   readCookie,
   verifySessionToken,
-} = require('../../_lib/adminSession');
-const { isFirestoreConfigured, updateCustomer } = require('../../_lib/customersStore');
-const { parseJsonBody } = require('../../_lib/httpUtils');
+} = require('../_lib/adminSession');
+const { isFirestoreConfigured, updateCustomer } = require('../_lib/customersStore');
+const { parseJsonBody } = require('../_lib/httpUtils');
 
 const ALLOWED_STATUS = new Set(['pending', 'contacted', 'ready', 'declined']);
+
+function registrationId(req) {
+  const fromQuery = req.query && req.query.id;
+  if (typeof fromQuery === 'string' && fromQuery.length > 0) return fromQuery;
+  if (Array.isArray(fromQuery) && fromQuery[0]) return String(fromQuery[0]);
+
+  const path = String(req.url || '').split('?')[0];
+  const last = path.split('/').filter(Boolean).pop();
+  if (last && last !== 'registrations') return decodeURIComponent(last);
+  return '';
+}
 
 module.exports = async function handler(req, res) {
   try {
@@ -33,7 +44,7 @@ module.exports = async function handler(req, res) {
       return;
     }
 
-    const id = req.query && req.query.id;
+    const id = registrationId(req);
     if (!id) {
       res.status(400).json({ success: false, error: 'Mangler registrerings-id' });
       return;

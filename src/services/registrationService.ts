@@ -118,9 +118,9 @@ export async function updateRegistrationStatus(
   id: string,
   status: ChurchRegistration['status'],
   adminNotes?: string
-): Promise<boolean> {
+): Promise<{ ok: boolean; error?: string }> {
   try {
-    const res = await fetch(`/api/registrations/${id}`, {
+    const res = await fetch(`/api/registrations/${encodeURIComponent(id)}`, {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
@@ -128,9 +128,11 @@ export async function updateRegistrationStatus(
       credentials: 'include',
       body: JSON.stringify({ status, adminNotes }),
     });
-    return res.ok;
+    if (res.ok) return { ok: true };
+    const errData = await res.json().catch(() => ({}));
+    return { ok: false, error: errData.error || 'Kunne ikke lagre status.' };
   } catch (err) {
     console.warn('Error patching registration status in CRM:', err);
-    return false;
+    return { ok: false, error: 'Kunne ikke lagre status.' };
   }
 }
