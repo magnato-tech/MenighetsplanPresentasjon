@@ -1,9 +1,6 @@
-import { clearCookieHeader, isCrmAdminHost } from '../_lib/adminSession';
+const { clearCookieHeader, isCrmAdminHost } = require('../_lib/adminSession');
 
-export default function handler(req: { method?: string; headers: { host?: string } }, res: {
-  status: (code: number) => { json: (body: Record<string, unknown>) => void };
-  setHeader: (name: string, value: string) => void;
-}) {
+module.exports = function handler(req, res) {
   try {
     if (req.method !== 'POST') {
       res.status(405).json({ success: false, error: 'Method not allowed' });
@@ -21,4 +18,4 @@ export default function handler(req: { method?: string; headers: { host?: string
   } catch {
     res.status(500).json({ success: false, error: 'Kunne ikke logge ut.' });
   }
-}
+};

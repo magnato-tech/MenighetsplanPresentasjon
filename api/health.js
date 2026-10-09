@@ -1,7 +1,4 @@
-export default function handler(
-  _req: unknown,
-  res: { status: (code: number) => { json: (body: Record<string, unknown>) => void } }
-) {
+module.exports = function handler(_req, res) {
   const configured = Boolean(
     process.env.CRM_FIREBASE_PROJECT_ID && process.env.CRM_FIREBASE_SERVICE_ACCOUNT
   );
@@ -14,4 +11,4 @@ export default function handler(
     },
     time: new Date().toISOString(),
   });
-}
+};

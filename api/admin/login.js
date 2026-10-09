@@ -1,14 +1,6 @@
-import {
-  clearCookieHeader,
-  createSessionToken,
-  isCrmAdminHost,
-  setCookieHeader,
-} from '../_lib/adminSession';
+const { createSessionToken, isCrmAdminHost, setCookieHeader } = require('../_lib/adminSession');
 
-export default function handler(req: { method?: string; headers: { host?: string }; body?: { password?: string } }, res: {
-  status: (code: number) => { json: (body: Record<string, unknown>) => void };
-  setHeader: (name: string, value: string) => void;
-}) {
+module.exports = function handler(req, res) {
   try {
     if (req.method !== 'POST') {
       res.status(405).json({ success: false, error: 'Method not allowed' });
@@ -23,7 +15,7 @@ export default function handler(req: { method?: string; headers: { host?: string
     }
 
     const expected = process.env.ADMIN_PASSWORD;
-    const password = req.body?.password;
+    const password = req.body && req.body.password;
     if (!expected || !password || password !== expected) {
       res.status(401).json({ success: false, error: 'Feil passord' });
       return;
@@ -41,4 +33,4 @@ export default function handler(req: { method?: string; headers: { host?: string
     console.error('admin login failed');
     res.status(500).json({ success: false, error: 'Kunne ikke fullføre innlogging.' });
   }
-}
+};

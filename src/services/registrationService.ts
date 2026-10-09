@@ -1,5 +1,20 @@
 import { ChurchRegistration, RegistrationSubmitPayload } from '../types/registration';
 
+async function parseJsonBody<T extends Record<string, unknown>>(
+  res: Response
+): Promise<{ data: T; isJson: boolean }> {
+  const contentType = res.headers.get('content-type') || '';
+  if (!contentType.includes('application/json')) {
+    const text = await res.text().catch(() => '');
+    if (text.includes('FUNCTION_INVOCATION_FAILED')) {
+      return { data: {} as T, isJson: false };
+    }
+    return { data: {} as T, isJson: false };
+  }
+  const data = (await res.json().catch(() => ({}))) as T;
+  return { data, isJson: true };
+}
+
 export async function submitRegistration(payload: RegistrationSubmitPayload): Promise<{
   success: boolean;
   registration: ChurchRegistration;
@@ -33,7 +48,13 @@ export async function verifyAdminPassword(password: string): Promise<{ success: 
       credentials: 'include',
       body: JSON.stringify({ password }),
     });
-    const data = await res.json().catch(() => ({} as { success?: boolean; error?: string }));
+    const { data, isJson } = await parseJsonBody<{ success?: boolean; error?: string }>(res);
+    if (!isJson) {
+      return {
+        success: false,
+        error: 'Serveren svarte ikke som forventet. Prøv igjen om litt eller kontakt support.',
+      };
+    }
     if (res.ok && data.success) {
       return { success: true };
     }

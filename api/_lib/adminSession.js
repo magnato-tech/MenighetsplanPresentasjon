@@ -1,15 +1,15 @@
-import crypto from 'node:crypto';
+const crypto = require('node:crypto');
 
-export const ADMIN_COOKIE = 'mp_admin_token';
+const ADMIN_COOKIE = 'mp_admin_token';
 const SESSION_TTL_MS = 24 * 60 * 60 * 1000;
 
-function sessionSecret(): string {
+function sessionSecret() {
   return process.env.ADMIN_SESSION_SECRET || process.env.ADMIN_PASSWORD || '';
 }
 
-export function isCrmAdminHost(hostHeader: string | undefined): boolean {
+function isCrmAdminHost(hostHeader) {
   if (!hostHeader) return false;
-  const host = hostHeader.split(':')[0].toLowerCase();
+  const host = String(hostHeader).split(':')[0].toLowerCase();
   if (host === 'crm.menighetsplan.no' || host === 'crm.localhost') return true;
   if (process.env.NODE_ENV !== 'production') {
     return host === 'localhost' || host === '127.0.0.1';
@@ -17,7 +17,7 @@ export function isCrmAdminHost(hostHeader: string | undefined): boolean {
   return false;
 }
 
-export function createSessionToken(): string | null {
+function createSessionToken() {
   const secret = sessionSecret();
   if (!secret) return null;
   const payload = Buffer.from(JSON.stringify({ exp: Date.now() + SESSION_TTL_MS }), 'utf8').toString(
@@ -27,7 +27,7 @@ export function createSessionToken(): string | null {
   return `${payload}.${sig}`;
 }
 
-export function verifySessionToken(token: string | undefined): boolean {
+function verifySessionToken(token) {
   if (!token) return false;
   const secret = sessionSecret();
   if (!secret) return false;
@@ -38,23 +38,23 @@ export function verifySessionToken(token: string | undefined): boolean {
   const b = Buffer.from(expected);
   if (a.length !== b.length || !crypto.timingSafeEqual(a, b)) return false;
   try {
-    const parsed = JSON.parse(Buffer.from(payload, 'base64url').toString('utf8')) as { exp?: number };
+    const parsed = JSON.parse(Buffer.from(payload, 'base64url').toString('utf8'));
     return typeof parsed.exp === 'number' && Date.now() < parsed.exp;
   } catch {
     return false;
   }
 }
 
-export function readCookie(cookieHeader: string | undefined, name: string): string | undefined {
+function readCookie(cookieHeader, name) {
   if (!cookieHeader) return undefined;
-  for (const part of cookieHeader.split(';')) {
+  for (const part of String(cookieHeader).split(';')) {
     const [key, ...rest] = part.trim().split('=');
     if (key === name) return decodeURIComponent(rest.join('='));
   }
   return undefined;
 }
 
-export function setCookieHeader(token: string): string {
+function setCookieHeader(token) {
   const secure = process.env.NODE_ENV === 'production';
   const parts = [
     `${ADMIN_COOKIE}=${encodeURIComponent(token)}`,
@@ -67,6 +67,16 @@ export function setCookieHeader(token: string): string {
   return parts.join('; ');
 }
 
-export function clearCookieHeader(): string {
+function clearCookieHeader() {
   return `${ADMIN_COOKIE}=; HttpOnly; Path=/; Max-Age=0; SameSite=lax`;
 }
+
+module.exports = {
+  ADMIN_COOKIE,
+  isCrmAdminHost,
+  createSessionToken,
+  verifySessionToken,
+  readCookie,
+  setCookieHeader,
+  clearCookieHeader,
+};
