@@ -1,7 +1,8 @@
-module.exports = function handler(_req, res) {
-  const configured = Boolean(
-    process.env.CRM_FIREBASE_PROJECT_ID && process.env.CRM_FIREBASE_SERVICE_ACCOUNT
-  );
+const { pingFirestore } = require('./_lib/customersStore');
+
+module.exports = async function handler(_req, res) {
+  const ping = await pingFirestore();
+
   res.status(200).json({
     status: 'ok',
     admin: {
@@ -10,9 +11,12 @@ module.exports = function handler(_req, res) {
       ),
     },
     firestore: {
-      check: 'config',
-      configured,
-      reachable: null,
+      check: 'connection',
+      configured: ping.configured,
+      credentialsOk: ping.credentialsOk,
+      reason: ping.reason,
+      reachable: ping.reachable,
+      reachReason: ping.reachReason,
     },
     time: new Date().toISOString(),
   });
