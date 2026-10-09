@@ -8,7 +8,12 @@ const {
   createCustomer,
   isFirestoreConfigured,
   listCustomers,
+  updateCustomer,
 } = require('../_lib/customersStore');
+const {
+  confirmationPatchFromResult,
+  sendRegistrationConfirmationEmail,
+} = require('../_lib/registrationEmail');
 const { getClientIp, parseJsonBody } = require('../_lib/httpUtils');
 const { checkRegistrationRateLimit } = require('../_lib/rateLimit');
 const { buildCustomerFromBody, validateRegistrationBody } = require('../_lib/registrationPayload');
@@ -88,10 +93,21 @@ module.exports = async function handler(req, res) {
       try {
         const newRegistration = buildCustomerFromBody(body);
         await createCustomer(newRegistration);
+
+        const emailResult = await sendRegistrationConfirmationEmail(newRegistration);
+        const confirmationPatch = confirmationPatchFromResult(emailResult);
+        let registrationForClient = newRegistration;
+        try {
+          const updated = await updateCustomer(newRegistration.id, confirmationPatch);
+          if (updated) registrationForClient = updated;
+        } catch (confirmLogErr) {
+          console.error('confirmation log update failed', confirmLogErr && confirmLogErr.message);
+        }
+
         res.status(201).json({
           success: true,
           message: 'Registrering er mottatt og lagret i CRM.',
-          registration: newRegistration,
+          registration: registrationForClient,
         });
       } catch (writeErr) {
         console.error('createCustomer failed', writeErr && writeErr.message);

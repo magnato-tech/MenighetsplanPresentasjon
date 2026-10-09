@@ -21,6 +21,9 @@ export interface ChurchRegistration {
   adminNotes?: string;
   sourceUrl?: string;
   updatedAt?: string;
+  confirmationEmailAt?: string;
+  confirmationEmailOk?: boolean;
+  confirmationEmailFailedAt?: string | null;
 }
 
 export interface RegistrationSubmitBody {

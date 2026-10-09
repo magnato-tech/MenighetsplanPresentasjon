@@ -184,15 +184,27 @@ export async function handleCreateRegistration(
   }
 
   try {
-    const { createCustomer } = await import('./customers.js');
+    const { createCustomer, updateCustomer } = await import('./customers.js');
     const newRegistration = buildCustomerFromBody(body);
     await createCustomer(newRegistration);
+
+    let registrationForClient = newRegistration;
+    try {
+      const emailMod = await import('../../api/_lib/registrationEmail.js');
+      const emailResult = await emailMod.sendRegistrationConfirmationEmail(newRegistration);
+      const confirmationPatch = emailMod.confirmationPatchFromResult(emailResult);
+      const updated = await updateCustomer(newRegistration.id, confirmationPatch);
+      if (updated) registrationForClient = updated;
+    } catch (emailErr) {
+      console.error('Confirmation email flow failed:', emailErr);
+    }
+
     return {
       status: 201,
       body: {
         success: true,
         message: 'Registrering er mottatt og lagret i CRM.',
-        registration: newRegistration,
+        registration: registrationForClient,
       },
     };
   } catch (err: unknown) {

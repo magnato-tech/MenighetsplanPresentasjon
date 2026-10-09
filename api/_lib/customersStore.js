@@ -182,8 +182,13 @@ async function updateCustomer(id, patch) {
   const updateData = { updatedAt: new Date().toISOString() };
   if (patch.status !== undefined) updateData.status = patch.status;
   if (patch.adminNotes !== undefined) updateData.adminNotes = patch.adminNotes;
+  if (patch.confirmationEmailAt !== undefined) updateData.confirmationEmailAt = patch.confirmationEmailAt;
+  if (patch.confirmationEmailOk !== undefined) updateData.confirmationEmailOk = patch.confirmationEmailOk;
+  if (patch.confirmationEmailFailedAt !== undefined) {
+    updateData.confirmationEmailFailedAt = patch.confirmationEmailFailedAt;
+  }
 
-  await ref.update(updateData);
+  await ref.update(stripUndefined(updateData));
   const updated = await ref.get();
   return updated.data();
 }

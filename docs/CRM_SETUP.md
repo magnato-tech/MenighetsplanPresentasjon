@@ -22,6 +22,10 @@ Påmeldinger fra **www.menighetsplan.no** lagres i Firestore-prosjektet **`menig
 | `CRM_FIREBASE_SERVICE_ACCOUNT` | Hele JSON-filen på én linje |
 | `ADMIN_PASSWORD` | Passord for CRM-innlogging |
 | `ADMIN_SESSION_SECRET` | Valgfritt, anbefalt i produksjon |
+| `RESEND_API_KEY` | API-nøkkel fra [Resend](https://resend.com) for bekreftelses-e-post ved bestilling |
+| `REGISTRATION_EMAIL_FROM` | Avsender, f.eks. `Menighetsplan <hei@menighetsplan.no>` (domene må være verifisert i Resend) |
+
+Uten `RESEND_API_KEY` lagres bestillingen, men kunden får ikke e-post og CRM viser «Bekreftelse ikke sendt».
 
 ## 3. Firestore-regler
 

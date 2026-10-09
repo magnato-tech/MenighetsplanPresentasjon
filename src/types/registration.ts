@@ -18,6 +18,10 @@ export interface ChurchRegistration {
   status: 'pending' | 'contacted' | 'ready' | 'declined';
   adminNotes?: string;
   sourceUrl?: string;
+  /** ISO-tidspunkt for sist forsøk på bekreftelses-e-post */
+  confirmationEmailAt?: string;
+  confirmationEmailOk?: boolean;
+  confirmationEmailFailedAt?: string | null;
 }
 
 export interface RegistrationSubmitPayload {

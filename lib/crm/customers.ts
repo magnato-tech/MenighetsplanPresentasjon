@@ -20,18 +20,29 @@ export async function createCustomer(record: ChurchRegistration): Promise<void> 
 
 export async function updateCustomer(
   id: string,
-  patch: { status?: RegistrationStatus; adminNotes?: string }
+  patch: {
+    status?: RegistrationStatus;
+    adminNotes?: string;
+    confirmationEmailAt?: string;
+    confirmationEmailOk?: boolean;
+    confirmationEmailFailedAt?: string | null;
+  }
 ): Promise<ChurchRegistration | null> {
   const db = getCrmDb();
   const ref = db.collection(CUSTOMERS_COLLECTION).doc(id);
   const existing = await ref.get();
   if (!existing.exists) return null;
 
-  const updateData: Record<string, string> = {
+  const updateData: Record<string, string | boolean | null> = {
     updatedAt: new Date().toISOString(),
   };
   if (patch.status !== undefined) updateData.status = patch.status;
   if (patch.adminNotes !== undefined) updateData.adminNotes = patch.adminNotes;
+  if (patch.confirmationEmailAt !== undefined) updateData.confirmationEmailAt = patch.confirmationEmailAt;
+  if (patch.confirmationEmailOk !== undefined) updateData.confirmationEmailOk = patch.confirmationEmailOk;
+  if (patch.confirmationEmailFailedAt !== undefined) {
+    updateData.confirmationEmailFailedAt = patch.confirmationEmailFailedAt;
+  }
 
   await ref.update(updateData);
   const updated = await ref.get();

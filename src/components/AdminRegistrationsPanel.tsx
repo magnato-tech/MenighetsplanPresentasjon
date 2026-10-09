@@ -341,6 +341,20 @@ export const AdminRegistrationsPanel: React.FC = () => {
                 </div>
               </div>
 
+              {selectedReg.confirmationEmailAt !== undefined && (
+                <div
+                  className={`p-3 rounded-xl border text-[11px] ${
+                    selectedReg.confirmationEmailOk
+                      ? 'bg-emerald-50 border-emerald-200 text-emerald-900'
+                      : 'bg-red-50 border-red-200 text-red-800'
+                  }`}
+                >
+                  {selectedReg.confirmationEmailOk
+                    ? `Bekreftelse sendt ${new Date(selectedReg.confirmationEmailAt).toLocaleString('nb-NO')}`
+                    : 'Bekreftelse ikke sendt'}
+                </div>
+              )}
+
               {selectedReg.interestedModules && selectedReg.interestedModules.length > 0 && (
                 <div className="flex flex-wrap gap-1.5">
                   {selectedReg.interestedModules.map((m) => (
