@@ -13,7 +13,7 @@ Lokal dev: Express + Vite middleware ([`server.ts`](../../server.ts)). Produksjo
 
 Prosjekt **`menighetsplan-crm`**, database **`(default)`**, samling **`customers`**.
 
-[`lib/crm/`](../../lib/crm/) bruker `@google-cloud/firestore` med `CRM_FIREBASE_SERVICE_ACCOUNT`.
+[`lib/crm/`](../../lib/crm/) bruker **Firebase Admin SDK** (`firebase-admin`) med `CRM_FIREBASE_SERVICE_ACCOUNT` mot prosjekt `menighetsplan-crm`, database `(default)`.
 
 [`lib/crm/hostPolicy.ts`](../../lib/crm/hostPolicy.ts): admin-endepunkter kun fra `crm.menighetsplan.no` (og `crm.localhost` / `localhost` i dev).
 

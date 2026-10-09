@@ -6,7 +6,7 @@ import {
   updateCustomer,
   validateRegistrationBody,
 } from './customers';
-import { isCrmDbReady } from './firestore';
+import { isCrmDbReady, pingCrmFirestore } from './firestore';
 import { adminHostForbidden, isAdminApiHost } from './hostPolicy';
 import {
   checkRegistrationRateLimit,
@@ -39,12 +39,17 @@ function forbiddenHost(): JsonResult {
   return { status, body };
 }
 
-export function handleHealth(): JsonResult {
+export async function handleHealth(): Promise<JsonResult> {
+  const ping = await pingCrmFirestore();
   return {
     status: 200,
     body: {
-      status: 'ok',
-      firestore: isCrmDbReady(),
+      status: ping.reachable ? 'ok' : 'degraded',
+      firestore: {
+        check: 'connection',
+        configured: ping.configured,
+        reachable: ping.reachable,
+      },
       time: new Date().toISOString(),
     },
   };

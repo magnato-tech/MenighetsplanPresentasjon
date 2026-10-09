@@ -23,8 +23,8 @@ function sendJson(res: Response, result: JsonResult, secure: boolean): void {
 }
 
 export function registerCrmRoutes(app: Express): void {
-  app.get('/api/health', (req, res) => {
-    sendJson(res, handleHealth(), isSecureRequest(req.headers));
+  app.get('/api/health', async (req, res) => {
+    sendJson(res, await handleHealth(), isSecureRequest(req.headers));
   });
 
   const adminLoginHandler = (req: Request, res: Response) => {

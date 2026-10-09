@@ -25,7 +25,13 @@ Påmeldinger fra **www.menighetsplan.no** lagres i Firestore-prosjektet **`menig
 
 ## 3. Firestore-regler
 
-Deploy [`firestore.rules`](firestore.rules) til `menighetsplan-crm`. Samlingen `customers` er lukket for direkte klienttilgang; kun server-API leser og skriver.
+[`firestore.rules`](../firestore.rules) nekter all klienttilgang. Server-API bruker **Firebase Admin SDK** med tjenestekontoen og omgår reglene.
+
+Deploy til prosjektet `menighetsplan-crm` (`.firebaserc` peker dit):
+
+```bash
+npx firebase-tools deploy --only firestore:rules --project menighetsplan-crm
+```
 
 ## 4. crm.menighetsplan.no på Vercel (samme deploy som www)
 
@@ -41,7 +47,7 @@ Frontend velger app via host ([`src/utils/appHost.ts`](../src/utils/appHost.ts))
 
 ## 5. Verifiser (etter godkjent deploy)
 
-1. `GET https://www.menighetsplan.no/api/health` → `"firestore": true`
+1. `GET https://www.menighetsplan.no/api/health` → `"status": "ok"` og `"firestore": { "check": "connection", "configured": true, "reachable": true }`. Endepunktet pinger Firestore; det returnerer ikke hemmeligheter eller interne feilmeldinger.
 2. Send inn skjema på www → nytt dokument i `customers`
 3. `https://crm.menighetsplan.no` → logg inn → se kunden
 4. `POST https://www.menighetsplan.no/api/admin/login` → **403** (admin-API kun på CRM-host)

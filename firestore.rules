@@ -1,13 +1,10 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-
-    // CRM for menighetsplan.no — kundepåmeldinger fra salgssiden.
-    // Klienter skal ikke lese eller oppdatere direkte; API bruker Admin SDK.
-    match /customers/{customerId} {
-      allow create: if false;
-      allow read, update, delete: if false;
+    // Klient-SDK har ingen tilgang. Server-API bruker Firebase Admin SDK
+    // med tjenestekonto og omgår disse reglene.
+    match /{document=**} {
+      allow read, write: if false;
     }
-
   }
 }

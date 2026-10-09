@@ -43,8 +43,8 @@ function hostFromReq(req: VercelRequest): string | undefined {
   return typeof value === 'string' ? value : undefined;
 }
 
-export function vercelHealth(req: VercelRequest, res: VercelResponse): void {
-  runVercelHandler(req, res, () => handleHealth());
+export async function vercelHealth(req: VercelRequest, res: VercelResponse): Promise<void> {
+  await runVercelHandler(req, res, () => handleHealth());
 }
 
 export function vercelAdminLogin(req: VercelRequest, res: VercelResponse): void {

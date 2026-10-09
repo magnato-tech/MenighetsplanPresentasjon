@@ -8,7 +8,7 @@
 | `www.menighetsplan.no` | `SalesApp` — salg + påmeldingsskjema |
 | `crm.menighetsplan.no` | `CrmApp` — innlogging + kundeliste |
 
-**Stack:** React 19, Vite 8, TypeScript, Tailwind 4, Express (lokal), Vercel `api/`, `@google-cloud/firestore` via [`lib/crm/`](lib/crm/).
+**Stack:** React 19, Vite 8, TypeScript, Tailwind 4, Express (lokal), Vercel `api/`, Firebase Admin SDK via [`lib/crm/`](lib/crm/).
 
 Dypere dokumentasjon: [docs/prosjekt/README.md](docs/prosjekt/README.md), [docs/CRM_SETUP.md](docs/CRM_SETUP.md).
 
