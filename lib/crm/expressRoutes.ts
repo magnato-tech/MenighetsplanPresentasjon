@@ -7,6 +7,7 @@ import {
   handleHealth,
   handleListRegistrations,
   handlePatchRegistration,
+  handleAdminSettings,
   type JsonResult,
 } from './handlers';
 import { buildClearCookieHeader, buildSetCookieHeader, isSecureRequest } from './http';
@@ -50,6 +51,26 @@ export function registerCrmRoutes(app: Express): void {
 
   app.post('/api/admin/logout', (req, res) => {
     sendJson(res, handleAdminLogout(req.headers.host), isSecureRequest(req.headers));
+  });
+
+  app.get('/api/admin/settings', async (req, res) => {
+    const result = await handleAdminSettings(
+      req.headers.host,
+      'GET',
+      {},
+      req.cookies?.mp_admin_token
+    );
+    sendJson(res, result, isSecureRequest(req.headers));
+  });
+
+  app.patch('/api/admin/settings', async (req, res) => {
+    const result = await handleAdminSettings(
+      req.headers.host,
+      'PATCH',
+      req.body as Record<string, unknown>,
+      req.cookies?.mp_admin_token
+    );
+    sendJson(res, result, isSecureRequest(req.headers));
   });
 
   app.get('/api/registrations', async (req, res) => {

@@ -214,6 +214,68 @@ export async function handleCreateRegistration(
   }
 }
 
+export async function handleAdminSettings(
+  host: string | undefined,
+  method: 'GET' | 'PATCH',
+  body: Record<string, unknown>,
+  sessionToken: string | undefined
+): Promise<JsonResult> {
+  if (!isAdminApiHost(host)) return forbiddenHost();
+  if (!isAdminAuthorized(sessionToken)) return unauthorized();
+
+  const crmSettings = await import('../../api/_lib/crmSettings.js');
+  const registrationEmail = await import('../../api/_lib/registrationEmail.js');
+
+  if (method === 'GET') {
+    const settings = await crmSettings.getCrmSettings();
+    const effective = await crmSettings.getEffectiveAdminNotifyEmail();
+    return {
+      status: 200,
+      body: {
+        success: true,
+        settings,
+        effective: {
+          adminNotifyEmail: effective.email,
+          source: effective.source,
+        },
+        capabilities: {
+          resendConfigured: registrationEmail.isEmailConfigured(),
+          envAdminNotifyEmail: crmSettings.envAdminNotifyEmail() || null,
+          fromAddress: process.env.REGISTRATION_EMAIL_FROM
+            ? String(process.env.REGISTRATION_EMAIL_FROM).trim()
+            : null,
+        },
+      },
+    };
+  }
+
+  const patch: { adminNotifyEmail?: string; notifyOnNewRegistration?: boolean } = {};
+  if (body.adminNotifyEmail !== undefined) {
+    patch.adminNotifyEmail = String(body.adminNotifyEmail);
+  }
+  if (body.notifyOnNewRegistration !== undefined) {
+    patch.notifyOnNewRegistration = Boolean(body.notifyOnNewRegistration);
+  }
+  try {
+    const settings = await crmSettings.updateCrmSettings(patch);
+    const effective = await crmSettings.getEffectiveAdminNotifyEmail();
+    return {
+      status: 200,
+      body: {
+        success: true,
+        settings,
+        effective: {
+          adminNotifyEmail: effective.email,
+          source: effective.source,
+        },
+      },
+    };
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : 'Kunne ikke lagre innstillinger.';
+    return { status: 400, body: { success: false, error: message } };
+  }
+}
+
 export async function handlePatchRegistration(
   host: string | undefined,
   id: string,

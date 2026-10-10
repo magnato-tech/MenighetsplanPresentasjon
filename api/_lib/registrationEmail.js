@@ -7,8 +7,10 @@ function isEmailConfigured() {
   return Boolean(normalizeEnvValue(process.env.RESEND_API_KEY));
 }
 
-function isAdminNotifyConfigured() {
-  return isEmailConfigured() && Boolean(normalizeEnvValue(process.env.ADMIN_NOTIFY_EMAIL));
+async function isAdminNotifyConfigured() {
+  if (!isEmailConfigured()) return false;
+  const { isAdminNotifyEnabled } = require('./crmSettings');
+  return isAdminNotifyEnabled();
 }
 
 function getFromAddress() {
@@ -121,7 +123,12 @@ async function sendRegistrationConfirmationEmail(registration) {
 }
 
 async function sendAdminNewRegistrationNotification(registration) {
-  const to = normalizeEnvValue(process.env.ADMIN_NOTIFY_EMAIL).toLowerCase();
+  const { getEffectiveAdminNotifyEmail, getCrmSettings } = require('./crmSettings');
+  const settings = await getCrmSettings();
+  if (!settings.notifyOnNewRegistration) {
+    return { ok: false, reason: 'disabled' };
+  }
+  const { email: to } = await getEffectiveAdminNotifyEmail();
   if (!to) {
     return { ok: false, reason: 'not_configured' };
   }

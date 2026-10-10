@@ -17,7 +17,7 @@ Detaljert oppsett: [CRM_SETUP.md](CRM_SETUP.md).
 | `ADMIN_SESSION_SECRET` | Cookie-signering (anbefalt) | |
 | `RESEND_API_KEY` | Sender bekreftelses-e-post | Fra [Resend](https://resend.com) → API Keys (`re_…`) |
 | `REGISTRATION_EMAIL_FROM` | Avsender | f.eks. `hei@kontakt.menighetsplan.no` |
-| `ADMIN_NOTIFY_EMAIL` | Varsel til deg ved ny bestilling | f.eks. din Gmail |
+| `ADMIN_NOTIFY_EMAIL` | *(Valgfritt)* Fallback for varsel-e-post hvis ikke satt i CRM | f.eks. din Gmail |
 
 Etter endring i env: **Redeploy** Production. Sjekk at aktiv deploy har riktig commit (ikke «Stale» på gammel hash).
 
@@ -41,7 +41,7 @@ Uten verifisert domene feiler sending; bestillingen lagres likevel.
 
 1. Lagre i Firestore (`customers`)
 2. Send bekreftelse til kundens e-post via Resend ([`api/_lib/registrationEmail.js`](../api/_lib/registrationEmail.js))
-3. Send varsel til `ADMIN_NOTIFY_EMAIL` (hvis satt)
+3. Send internt varsel (e-post fra CRM-innstillinger, ellers `ADMIN_NOTIFY_EMAIL`)
 4. Lagre resultat på kundedokumentet (`confirmationEmailAt`, `adminNotifyAt`, …)
 
 **CRM (høyre panel på kundekortet):**
@@ -67,7 +67,13 @@ Kun **nye** bestillinger etter at e-post-koden er deployet får disse feltene. E
 
 ## Varsel til eier
 
-Sett `ADMIN_NOTIFY_EMAIL` i Vercel. Ved hver ny bestilling får du e-post med menighetsnavn, kontakt og lenke til CRM. CRM viser «Internt varsel sendt til eier» på kundekortet.
+**Anbefalt:** Logg inn på `crm.menighetsplan.no` → **Innstillinger** → sett «Varsel til e-post» og slå varsel på/av uten deploy.
+
+Innstillinger lagres i Firestore (`crm_settings/global`). `ADMIN_NOTIFY_EMAIL` i Vercel brukes bare som fallback når CRM-feltet er tomt og varsel er på.
+
+Resend-nøkkel og avsender (`RESEND_API_KEY`, `REGISTRATION_EMAIL_FROM`) må fortsatt ligge i Vercel.
+
+Ved hver ny bestilling får du e-post med menighetsnavn, kontakt og lenke til CRM. CRM viser «Internt varsel sendt til eier» på kundekortet.
 
 ## Vanlige feil (historikk)
 

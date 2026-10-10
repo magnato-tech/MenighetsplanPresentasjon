@@ -11,7 +11,9 @@ import {
   KeyRound,
   Eye,
   EyeOff,
+  Settings,
 } from 'lucide-react';
+import { CrmSettingsModal } from './CrmSettingsModal';
 import { ChurchRegistration } from '../types/registration';
 import {
   fetchAllRegistrations,
@@ -34,6 +36,7 @@ export const AdminRegistrationsPanel: React.FC = () => {
   const [selectedReg, setSelectedReg] = useState<ChurchRegistration | null>(null);
   const [statusError, setStatusError] = useState<string | null>(null);
   const [resendingConfirmation, setResendingConfirmation] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   const confirmationReasonHint = (reason?: string | null) => {
     switch (reason) {
@@ -53,6 +56,17 @@ export const AdminRegistrationsPanel: React.FC = () => {
         return 'Nettverksfeil mot Resend.';
       default:
         return reason ? `Feilkode: ${reason}` : null;
+    }
+  };
+
+  const adminNotifyReasonHint = (reason?: string | null) => {
+    switch (reason) {
+      case 'disabled':
+        return 'Varsel er slått av under CRM-innstillinger.';
+      case 'not_configured':
+        return 'Sett varsel-e-post under Innstillinger (eller ADMIN_NOTIFY_EMAIL i Vercel).';
+      default:
+        return confirmationReasonHint(reason);
     }
   };
 
@@ -244,6 +258,15 @@ export const AdminRegistrationsPanel: React.FC = () => {
         </div>
         <div className="flex items-center gap-2">
           <button
+            type="button"
+            onClick={() => setSettingsOpen(true)}
+            title="CRM-innstillinger"
+            className="p-2 rounded-xl border border-slate-200 hover:bg-slate-100 text-slate-600 transition-colors cursor-pointer flex items-center gap-1 text-xs px-3"
+          >
+            <Settings className="w-4 h-4" />
+            <span className="hidden sm:inline">Innstillinger</span>
+          </button>
+          <button
             onClick={loadData}
             disabled={loading}
             title="Oppdater liste"
@@ -426,7 +449,13 @@ export const AdminRegistrationsPanel: React.FC = () => {
                 >
                   {selectedReg.adminNotifyOk
                     ? `Internt varsel sendt til eier ${new Date(selectedReg.adminNotifyAt).toLocaleString('nb-NO')}`
-                    : 'Internt varsel til eier ble ikke sendt (sjekk ADMIN_NOTIFY_EMAIL)'}
+                    : 'Internt varsel til eier ble ikke sendt'}
+                  {!selectedReg.adminNotifyOk &&
+                    adminNotifyReasonHint(selectedReg.adminNotifyReason) && (
+                      <div className="opacity-90 mt-1">
+                        {adminNotifyReasonHint(selectedReg.adminNotifyReason)}
+                      </div>
+                    )}
                 </div>
               )}
 
@@ -479,6 +508,8 @@ export const AdminRegistrationsPanel: React.FC = () => {
       <div className="pt-4 border-t border-slate-200 mt-4 text-xs text-slate-500">
         Totalt <strong>{registrations.length}</strong> kunder i CRM.
       </div>
+
+      <CrmSettingsModal open={settingsOpen} onClose={() => setSettingsOpen(false)} />
     </div>
   );
 };
