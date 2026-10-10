@@ -191,9 +191,7 @@ export async function handleCreateRegistration(
     let registrationForClient = newRegistration;
     try {
       const emailMod = await import('../../api/_lib/registrationEmail.js');
-      const emailResult = await emailMod.sendRegistrationConfirmationEmail(newRegistration);
-      const confirmationPatch = emailMod.confirmationPatchFromResult(emailResult);
-      const updated = await updateCustomer(newRegistration.id, confirmationPatch);
+      const updated = await emailMod.sendPostRegistrationEmails(newRegistration, updateCustomer);
       if (updated) registrationForClient = updated;
     } catch (emailErr) {
       console.error('Confirmation email flow failed:', emailErr);

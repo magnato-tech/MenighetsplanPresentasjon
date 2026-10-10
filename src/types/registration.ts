@@ -23,6 +23,9 @@ export interface ChurchRegistration {
   confirmationEmailOk?: boolean;
   confirmationEmailFailedAt?: string | null;
   confirmationEmailReason?: string | null;
+  adminNotifyAt?: string;
+  adminNotifyOk?: boolean;
+  adminNotifyReason?: string | null;
 }
 
 export interface RegistrationSubmitPayload {

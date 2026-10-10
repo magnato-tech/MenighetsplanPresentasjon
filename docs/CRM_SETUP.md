@@ -23,7 +23,8 @@ Påmeldinger fra **www.menighetsplan.no** lagres i Firestore-prosjektet **`menig
 | `ADMIN_PASSWORD` | Passord for CRM-innlogging |
 | `ADMIN_SESSION_SECRET` | Valgfritt, anbefalt i produksjon |
 | `RESEND_API_KEY` | API-nøkkel fra Resend → **API Keys** (`re_…`) |
-| `REGISTRATION_EMAIL_FROM` | Avsender på **verifisert** domene, f.eks. `Menighetsplan <hei@menighetsplan.no>` |
+| `REGISTRATION_EMAIL_FROM` | Avsender, f.eks. `hei@kontakt.menighetsplan.no` |
+| `ADMIN_NOTIFY_EMAIL` | E-post som får varsel ved ny bestilling |
 
 **Viktig:** `CRM_FIREBASE_SERVICE_ACCOUNT` må være **Firebase JSON** (starter med `{`), ikke Stripe-nøkkel eller `ADMIN_PASSWORD`.
 

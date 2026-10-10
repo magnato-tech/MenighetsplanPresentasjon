@@ -16,7 +16,8 @@ Detaljert oppsett: [CRM_SETUP.md](CRM_SETUP.md).
 | `ADMIN_PASSWORD` | CRM-innlogging på `crm.menighetsplan.no` | |
 | `ADMIN_SESSION_SECRET` | Cookie-signering (anbefalt) | |
 | `RESEND_API_KEY` | Sender bekreftelses-e-post | Fra [Resend](https://resend.com) → API Keys (`re_…`) |
-| `REGISTRATION_EMAIL_FROM` | Avsender | Må bruke **verifisert** domene, f.eks. `Menighetsplan <hei@menighetsplan.no>` |
+| `REGISTRATION_EMAIL_FROM` | Avsender | f.eks. `hei@kontakt.menighetsplan.no` |
+| `ADMIN_NOTIFY_EMAIL` | Varsel til deg ved ny bestilling | f.eks. din Gmail |
 
 Etter endring i env: **Redeploy** Production. Sjekk at aktiv deploy har riktig commit (ikke «Stale» på gammel hash).
 
@@ -40,7 +41,8 @@ Uten verifisert domene feiler sending; bestillingen lagres likevel.
 
 1. Lagre i Firestore (`customers`)
 2. Send bekreftelse til kundens e-post via Resend ([`api/_lib/registrationEmail.js`](../api/_lib/registrationEmail.js))
-3. Lagre resultat på kundedokumentet (`confirmationEmailAt`, `confirmationEmailOk`)
+3. Send varsel til `ADMIN_NOTIFY_EMAIL` (hvis satt)
+4. Lagre resultat på kundedokumentet (`confirmationEmailAt`, `adminNotifyAt`, …)
 
 **CRM (høyre panel på kundekortet):**
 
@@ -59,13 +61,13 @@ Kun **nye** bestillinger etter at e-post-koden er deployet får disse feltene. E
 | `recipient_not_allowed` | Verifiser domene, eller test med mottaker = Resend-kontoens e-post |
 | `not_configured` | Mangler `RESEND_API_KEY` |
 
-`GET /api/health` → `email.resendApiKeyConfigured` og `email.fromConfigured`.
+`GET /api/health` → `email.resendApiKeyConfigured`, `email.fromConfigured`, `email.adminNotifyConfigured`.
 
 **Gratis nivå:** Resend Free ca. 3 000 e-poster/mnd, maks 100/dag — mer enn nok for påmeldinger.
 
-## Varsel til eier (ikke implementert)
+## Varsel til eier
 
-Automatisk e-post til deg ved ny kunde er **ikke** på plass ennå. Inntil da: sjekk `crm.menighetsplan.no` jevnlig, eller fullfør Resend og be om «varsel til admin» i kodebase.
+Sett `ADMIN_NOTIFY_EMAIL` i Vercel. Ved hver ny bestilling får du e-post med menighetsnavn, kontakt og lenke til CRM. CRM viser «Internt varsel sendt til eier» på kundekortet.
 
 ## Vanlige feil (historikk)
 

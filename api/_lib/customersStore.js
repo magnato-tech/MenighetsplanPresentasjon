@@ -197,6 +197,9 @@ async function updateCustomer(id, patch) {
   if (patch.confirmationEmailReason !== undefined) {
     updateData.confirmationEmailReason = patch.confirmationEmailReason;
   }
+  if (patch.adminNotifyAt !== undefined) updateData.adminNotifyAt = patch.adminNotifyAt;
+  if (patch.adminNotifyOk !== undefined) updateData.adminNotifyOk = patch.adminNotifyOk;
+  if (patch.adminNotifyReason !== undefined) updateData.adminNotifyReason = patch.adminNotifyReason;
 
   await ref.update(stripUndefined(updateData));
   const updated = await ref.get();

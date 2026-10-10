@@ -1,5 +1,5 @@
 const { pingFirestore } = require('./_lib/customersStore');
-const { isEmailConfigured } = require('./_lib/registrationEmail');
+const { isAdminNotifyConfigured, isEmailConfigured } = require('./_lib/registrationEmail');
 
 module.exports = async function handler(_req, res) {
   const ping = await pingFirestore();
@@ -24,6 +24,7 @@ module.exports = async function handler(_req, res) {
       fromConfigured: Boolean(
         process.env.REGISTRATION_EMAIL_FROM && String(process.env.REGISTRATION_EMAIL_FROM).trim()
       ),
+      adminNotifyConfigured: isAdminNotifyConfigured(),
     },
     time: new Date().toISOString(),
   });

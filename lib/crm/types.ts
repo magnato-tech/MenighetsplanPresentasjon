@@ -24,6 +24,10 @@ export interface ChurchRegistration {
   confirmationEmailAt?: string;
   confirmationEmailOk?: boolean;
   confirmationEmailFailedAt?: string | null;
+  confirmationEmailReason?: string | null;
+  adminNotifyAt?: string;
+  adminNotifyOk?: boolean;
+  adminNotifyReason?: string | null;
 }
 
 export interface RegistrationSubmitBody {

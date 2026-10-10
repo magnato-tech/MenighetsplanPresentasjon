@@ -26,6 +26,10 @@ export async function updateCustomer(
     confirmationEmailAt?: string;
     confirmationEmailOk?: boolean;
     confirmationEmailFailedAt?: string | null;
+    confirmationEmailReason?: string | null;
+    adminNotifyAt?: string;
+    adminNotifyOk?: boolean;
+    adminNotifyReason?: string | null;
   }
 ): Promise<ChurchRegistration | null> {
   const db = getCrmDb();
@@ -43,6 +47,12 @@ export async function updateCustomer(
   if (patch.confirmationEmailFailedAt !== undefined) {
     updateData.confirmationEmailFailedAt = patch.confirmationEmailFailedAt;
   }
+  if (patch.confirmationEmailReason !== undefined) {
+    updateData.confirmationEmailReason = patch.confirmationEmailReason;
+  }
+  if (patch.adminNotifyAt !== undefined) updateData.adminNotifyAt = patch.adminNotifyAt;
+  if (patch.adminNotifyOk !== undefined) updateData.adminNotifyOk = patch.adminNotifyOk;
+  if (patch.adminNotifyReason !== undefined) updateData.adminNotifyReason = patch.adminNotifyReason;
 
   await ref.update(updateData);
   const updated = await ref.get();

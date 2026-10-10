@@ -10,7 +10,7 @@ const {
   listCustomers,
   updateCustomer,
 } = require('../_lib/customersStore');
-const { sendAndLogConfirmation } = require('../_lib/registrationEmail');
+const { sendPostRegistrationEmails } = require('../_lib/registrationEmail');
 const { getClientIp, parseJsonBody } = require('../_lib/httpUtils');
 const { checkRegistrationRateLimit } = require('../_lib/rateLimit');
 const { buildCustomerFromBody, validateRegistrationBody } = require('../_lib/registrationPayload');
@@ -93,7 +93,7 @@ module.exports = async function handler(req, res) {
 
         let registrationForClient = newRegistration;
         try {
-          const updated = await sendAndLogConfirmation(newRegistration, updateCustomer);
+          const updated = await sendPostRegistrationEmails(newRegistration, updateCustomer);
           if (updated) registrationForClient = updated;
         } catch (confirmLogErr) {
           console.error('confirmation log update failed', confirmLogErr && confirmLogErr.message);
