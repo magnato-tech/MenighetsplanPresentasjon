@@ -210,6 +210,7 @@ module.exports = {
   isFirestoreConfigured,
   validateServiceAccountEnv,
   pingFirestore,
+  getDb,
   listCustomers,
   getCustomer,
   createCustomer,
