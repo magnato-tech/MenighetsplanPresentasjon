@@ -26,6 +26,26 @@ function buildConfirmationContent(registration) {
   return { subject, text };
 }
 
+function classifyResendError(status, bodyText) {
+  const lower = String(bodyText).toLowerCase();
+  if (status === 401 || status === 403 && lower.includes('api key')) {
+    return 'invalid_api_key';
+  }
+  if (lower.includes('not verified') || lower.includes('domain is not')) {
+    return 'domain_not_verified';
+  }
+  if (lower.includes('from') && (lower.includes('invalid') || lower.includes('not allowed'))) {
+    return 'invalid_from';
+  }
+  if (lower.includes('only send') || lower.includes('testing') || lower.includes('verify a domain')) {
+    return 'recipient_not_allowed';
+  }
+  if (status === 422 || status === 400) {
+    return 'invalid_request';
+  }
+  return 'provider_error';
+}
+
 async function sendRegistrationConfirmationEmail(registration) {
   const apiKey = normalizeEnvValue(process.env.RESEND_API_KEY);
   if (!apiKey) {
@@ -35,7 +55,7 @@ async function sendRegistrationConfirmationEmail(registration) {
   const from =
     normalizeEnvValue(process.env.REGISTRATION_EMAIL_FROM) ||
     'Menighetsplan <onboarding@resend.dev>';
-  const to = normalizeEnvValue(registration.email);
+  const to = normalizeEnvValue(registration.email).toLowerCase();
   if (!to) {
     return { ok: false, reason: 'missing_recipient' };
   }
@@ -59,11 +79,11 @@ async function sendRegistrationConfirmationEmail(registration) {
 
     if (!res.ok) {
       const errBody = await res.text().catch(() => '');
-      console.error('Resend confirmation failed', res.status, errBody.slice(0, 200));
-      return { ok: false, reason: 'provider_error' };
+      console.error('Resend confirmation failed', res.status, errBody.slice(0, 400));
+      return { ok: false, reason: classifyResendError(res.status, errBody) };
     }
 
-    return { ok: true };
+    return { ok: true, reason: null };
   } catch (err) {
     console.error('Resend confirmation error', err && err.message);
     return { ok: false, reason: 'network_error' };
@@ -77,17 +97,26 @@ function confirmationPatchFromResult(result) {
       confirmationEmailAt: at,
       confirmationEmailOk: true,
       confirmationEmailFailedAt: null,
+      confirmationEmailReason: null,
     };
   }
   return {
     confirmationEmailAt: at,
     confirmationEmailOk: false,
     confirmationEmailFailedAt: at,
+    confirmationEmailReason: result.reason || 'provider_error',
   };
+}
+
+async function sendAndLogConfirmation(registration, updateCustomer) {
+  const emailResult = await sendRegistrationConfirmationEmail(registration);
+  const confirmationPatch = confirmationPatchFromResult(emailResult);
+  return updateCustomer(registration.id, confirmationPatch);
 }
 
 module.exports = {
   isEmailConfigured,
   sendRegistrationConfirmationEmail,
   confirmationPatchFromResult,
+  sendAndLogConfirmation,
 };

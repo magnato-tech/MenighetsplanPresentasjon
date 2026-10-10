@@ -114,6 +114,24 @@ export async function fetchAllRegistrations(): Promise<ChurchRegistration[]> {
   }
 }
 
+export async function resendRegistrationConfirmation(
+  id: string
+): Promise<{ ok: boolean; registration?: ChurchRegistration; error?: string }> {
+  try {
+    const res = await fetch(`/api/registrations/${encodeURIComponent(id)}/resend-confirmation`, {
+      method: 'POST',
+      credentials: 'include',
+    });
+    const data = await res.json().catch(() => ({}));
+    if (res.ok && data.registration) {
+      return { ok: true, registration: data.registration as ChurchRegistration };
+    }
+    return { ok: false, error: data.error || 'Kunne ikke sende bekreftelse.' };
+  } catch {
+    return { ok: false, error: 'Kunne ikke sende bekreftelse.' };
+  }
+}
+
 export async function updateRegistrationStatus(
   id: string,
   status: ChurchRegistration['status'],

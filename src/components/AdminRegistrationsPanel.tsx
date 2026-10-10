@@ -16,6 +16,7 @@ import { ChurchRegistration } from '../types/registration';
 import {
   fetchAllRegistrations,
   updateRegistrationStatus,
+  resendRegistrationConfirmation,
   verifyAdminPassword,
   checkAdminSession,
   logoutAdmin,
@@ -32,6 +33,46 @@ export const AdminRegistrationsPanel: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [selectedReg, setSelectedReg] = useState<ChurchRegistration | null>(null);
   const [statusError, setStatusError] = useState<string | null>(null);
+  const [resendingConfirmation, setResendingConfirmation] = useState(false);
+
+  const confirmationReasonHint = (reason?: string | null) => {
+    switch (reason) {
+      case 'not_configured':
+        return 'Mangler RESEND_API_KEY i Vercel.';
+      case 'domain_not_verified':
+        return 'Domene ikke verifisert i Resend, eller feil REGISTRATION_EMAIL_FROM.';
+      case 'invalid_from':
+        return 'Ugyldig avsender (REGISTRATION_EMAIL_FROM).';
+      case 'invalid_api_key':
+        return 'Ugyldig Resend API-nøkkel.';
+      case 'recipient_not_allowed':
+        return 'Uten verifisert domene kan Resend ofte bare sende til e-posten på Resend-kontoen.';
+      case 'invalid_request':
+        return 'Resend avviste forespørselen (sjekk avsender og mottaker).';
+      case 'network_error':
+        return 'Nettverksfeil mot Resend.';
+      default:
+        return reason ? `Feilkode: ${reason}` : null;
+    }
+  };
+
+  const applyRegistrationUpdate = (updated: ChurchRegistration) => {
+    setRegistrations((prev) => prev.map((r) => (r.id === updated.id ? updated : r)));
+    setSelectedReg((prev) => (prev && prev.id === updated.id ? updated : prev));
+  };
+
+  const handleResendConfirmation = async () => {
+    if (!selectedReg) return;
+    setResendingConfirmation(true);
+    setStatusError(null);
+    const result = await resendRegistrationConfirmation(selectedReg.id);
+    setResendingConfirmation(false);
+    if (result.ok && result.registration) {
+      applyRegistrationUpdate(result.registration);
+    } else {
+      setStatusError(result.error || 'Kunne ikke sende bekreftelse.');
+    }
+  };
 
   const loadData = async () => {
     setLoading(true);
@@ -341,19 +382,39 @@ export const AdminRegistrationsPanel: React.FC = () => {
                 </div>
               </div>
 
-              {selectedReg.confirmationEmailAt !== undefined && (
-                <div
-                  className={`p-3 rounded-xl border text-[11px] ${
-                    selectedReg.confirmationEmailOk
-                      ? 'bg-emerald-50 border-emerald-200 text-emerald-900'
-                      : 'bg-red-50 border-red-200 text-red-800'
-                  }`}
-                >
+              <div
+                className={`p-3 rounded-xl border text-[11px] space-y-2 ${
+                  selectedReg.confirmationEmailOk
+                    ? 'bg-emerald-50 border-emerald-200 text-emerald-900'
+                    : selectedReg.confirmationEmailAt
+                      ? 'bg-red-50 border-red-200 text-red-800'
+                      : 'bg-slate-50 border-slate-200 text-slate-700'
+                }`}
+              >
+                <div>
                   {selectedReg.confirmationEmailOk
-                    ? `Bekreftelse sendt ${new Date(selectedReg.confirmationEmailAt).toLocaleString('nb-NO')}`
-                    : 'Bekreftelse ikke sendt'}
+                    ? `Bekreftelse sendt ${new Date(selectedReg.confirmationEmailAt!).toLocaleString('nb-NO')}`
+                    : selectedReg.confirmationEmailAt
+                      ? 'Bekreftelse ikke sendt'
+                      : 'Ingen automatisk bekreftelse logget (eldre bestilling eller ikke forsøkt)'}
                 </div>
-              )}
+                {!selectedReg.confirmationEmailOk &&
+                  confirmationReasonHint(selectedReg.confirmationEmailReason) && (
+                    <div className="opacity-90">
+                      {confirmationReasonHint(selectedReg.confirmationEmailReason)}
+                    </div>
+                  )}
+                {!selectedReg.confirmationEmailOk && (
+                  <button
+                    type="button"
+                    onClick={handleResendConfirmation}
+                    disabled={resendingConfirmation}
+                    className="px-3 py-1.5 rounded-lg bg-white border border-slate-300 font-semibold text-slate-800 hover:bg-slate-100 disabled:opacity-60"
+                  >
+                    {resendingConfirmation ? 'Sender…' : 'Send bekreftelse på nytt'}
+                  </button>
+                )}
+              </div>
 
               {selectedReg.interestedModules && selectedReg.interestedModules.length > 0 && (
                 <div className="flex flex-wrap gap-1.5">

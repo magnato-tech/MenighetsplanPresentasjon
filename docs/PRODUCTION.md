@@ -49,7 +49,17 @@ Uten verifisert domene feiler sending; bestillingen lagres likevel.
 
 Kun **nye** bestillinger etter at e-post-koden er deployet får disse feltene. Eldre kunder i listen viser ingen logglinje.
 
-**Feilsøking e-post:** Resend → **Emails** / logs for konkret feilmelding (ofte «domain not verified» eller ugyldig `from`).
+**Feilsøking e-post:** Resend → **Emails** / logs for konkret feilmelding (ofte «domain not verified» eller ugyldig `from`). I CRM vises `confirmationEmailReason` som kort forklaring; bruk **Send bekreftelse på nytt** etter at domene er verifisert.
+
+| `confirmationEmailReason` | Betydning |
+|---------------------------|-----------|
+| `domain_not_verified` | Legg til og verifiser domene i Resend |
+| `invalid_from` | Rett `REGISTRATION_EMAIL_FROM` |
+| `invalid_api_key` | Rett `RESEND_API_KEY` |
+| `recipient_not_allowed` | Verifiser domene, eller test med mottaker = Resend-kontoens e-post |
+| `not_configured` | Mangler `RESEND_API_KEY` |
+
+`GET /api/health` → `email.resendApiKeyConfigured` og `email.fromConfigured`.
 
 **Gratis nivå:** Resend Free ca. 3 000 e-poster/mnd, maks 100/dag — mer enn nok for påmeldinger.
 

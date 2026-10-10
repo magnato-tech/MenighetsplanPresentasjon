@@ -22,6 +22,7 @@ export interface ChurchRegistration {
   confirmationEmailAt?: string;
   confirmationEmailOk?: boolean;
   confirmationEmailFailedAt?: string | null;
+  confirmationEmailReason?: string | null;
 }
 
 export interface RegistrationSubmitPayload {

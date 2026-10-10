@@ -173,6 +173,13 @@ async function createCustomer(record) {
   await db.collection(CUSTOMERS_COLLECTION).doc(record.id).set(stripUndefined(record));
 }
 
+async function getCustomer(id) {
+  const db = getDb();
+  const snap = await db.collection(CUSTOMERS_COLLECTION).doc(id).get();
+  if (!snap.exists) return null;
+  return snap.data();
+}
+
 async function updateCustomer(id, patch) {
   const db = getDb();
   const ref = db.collection(CUSTOMERS_COLLECTION).doc(id);
@@ -187,6 +194,9 @@ async function updateCustomer(id, patch) {
   if (patch.confirmationEmailFailedAt !== undefined) {
     updateData.confirmationEmailFailedAt = patch.confirmationEmailFailedAt;
   }
+  if (patch.confirmationEmailReason !== undefined) {
+    updateData.confirmationEmailReason = patch.confirmationEmailReason;
+  }
 
   await ref.update(stripUndefined(updateData));
   const updated = await ref.get();
@@ -198,6 +208,7 @@ module.exports = {
   validateServiceAccountEnv,
   pingFirestore,
   listCustomers,
+  getCustomer,
   createCustomer,
   updateCustomer,
 };
