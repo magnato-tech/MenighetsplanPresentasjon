@@ -6,12 +6,12 @@ Tekstgrunnlag for nettside og presentasjon. Alt under følger det som allerede f
 
 **To spørsmål som styrer produktet:**
 
-| Spørsmål | Produkt | Pris |
-|----------|---------|------|
-| Hva skjer i menigheten? | Menighetsplattform | 0 kr, alltid |
-| Hvem skal gjøre hva? | Menighetsplan | 499 kr/mnd |
+| Spørsmål | Produkt |
+|----------|---------|
+| Hva skjer i menigheten? | Menighetsplattform |
+| Hvem skal gjøre hva? | Menighetsplan |
 
-Tilleggsmoduler koster 99 kr/mnd per modul. Ingen binding. Ingen oppstartskostnad. 30 dagers prøve av Menighetsplan uten betalingskort.
+Tilleggsmoduler aktiveres etter behov. Pris er ikke tatt med her, fordi den ikke er endelig satt.
 
 ---
 
@@ -33,9 +33,9 @@ Samme plattform brukes av:
 
 ## Produktnivåer
 
-### 1. Menighetsplattform — 0 kr
+### 1. Menighetsplattform
 
-Gratis grunnplattform for offentlig formidling. Alltid 0 kr. Ingen binding.
+Grunnplattform for offentlig formidling.
 
 Inkludert:
 
@@ -49,9 +49,9 @@ Inkludert:
 - dynamiske innholdsmoduler som henter data og oppdaterer nettsiden selv
 - enkel Min Side: neste i menigheten, kommende samlinger og lenker til relevant innhold
 
-### 2. Menighetsplan — 499 kr/mnd
+### 2. Menighetsplan
 
-Alt i Menighetsplattform, pluss verktøyene for å organisere mennesker og arbeid. Merket som hovedprodukt. Prøv gratis i 30 dager.
+Alt i Menighetsplattform, pluss verktøyene for å organisere mennesker og arbeid. Hovedproduktet.
 
 Inkludert:
 
@@ -66,9 +66,7 @@ Inkludert:
 - gruppechat for team
 - oppstartshjelp
 
-Når prøveperioden utløper, beholdes dataene. Tilgangen til Menighetsplan-funksjonene pauses til menigheten velger å fortsette. Vi tar kontakt før perioden utløper.
-
-### 3. Tilleggsmoduler — 99 kr/mnd per modul
+### 3. Tilleggsmoduler
 
 Aktiveres etter behov. Ingen pakketvang. Kan spørres om og slås på uten at kjernen endres.
 
@@ -166,7 +164,7 @@ Data fra administrasjonen vises på nettsiden uten ekstra manuell kopiering: nes
 
 ### Grupper og mennesker
 
-Del av Menighetsplan (499 kr), ikke av gratisnivået.
+Del av Menighetsplan, ikke av Menighetsplattform.
 
 - husgrupper med leder, deltakere og neste samling
 - tjenesteteam (lovsang, barnekirke, kafé og liknende)
@@ -193,7 +191,7 @@ Praktisk betyr det: forespørsel sendes, personen bekrefter eller avslår, ubesv
 
 ### Min Side
 
-| | Gratis (Menighetsplattform) | Menighetsplan |
+| | Menighetsplattform | Menighetsplan |
 |--|-----------------------------|---------------|
 | Innhold | Neste i menigheten, kommende samlinger, lenker til relevant innhold | Samme, pluss personlige oppgaver, påmeldinger og tjenesteliste |
 
@@ -214,7 +212,7 @@ Ett kontrollpanel for innhold, kalender, grupper, brukere, statistikk og innstil
 
 Enkel, personvernvennlig oversikt kan vises i administrasjonen (besøk, mest leste sider, mobil og desktop).
 
-Den utvidede **Analysemodulen** (99 kr/mnd) går lenger:
+Den utvidede **Analysemodulen** går lenger:
 
 - nettside: besøk, trafikk og mest leste sider
 - menighet: aktivitet i husgrupper og samlinger
@@ -225,14 +223,14 @@ Den utvidede **Analysemodulen** (99 kr/mnd) går lenger:
 
 ## Tilleggsmoduler i detalj
 
-### Givertjeneste — 99 kr/mnd
+### Givertjeneste
 
 - Vipps-integrasjon for raske gaver
 - faste giveravtaler og engangsgaver
 - giveroversikt og full gavehistorikk
 - automatisk rapportering og årsoppgaver til Skatteetaten
 
-### Utleie — 99 kr/mnd
+### Utleie
 
 - oversikt over kirkerom, festsaler og møterom
 - offentlig eller intern tilgjengelighetskalender
@@ -241,32 +239,32 @@ Den utvidede **Analysemodulen** (99 kr/mnd) går lenger:
 
 Inntekter fra utleie og givertjeneste kan etter hvert samles i en helhetlig økonomioversikt.
 
-### Arrangement — 99 kr/mnd
+### Arrangement
 
 - påmeldingsskjemaer og deltakerlister
 - kapasitet og automatisk venteliste
 - betaling ved påmelding
 - digital check-in på mobilen ved døren
 
-### Kommunikasjon — 99 kr/mnd
+### Kommunikasjon
 
 - SMS til frivillige og team
 - e-post og nyhetsbrev til menigheten
 - utsendelser til bestemte husgrupper
 - åpningsrate og leveringsstatus
 
-### Skjemaer — 99 kr/mnd
+### Skjemaer
 
 - dra-og-slipp skjemabygger
 - dåpspåmelding og vigselsforespørsel
 - spørreundersøkelser
 - lagring i tråd med GDPR
 
-### Analyse — 99 kr/mnd
+### Analyse
 
 Se punktet over. Dette er den dype innsikten, utover den enkle oversikten i administrasjonen.
 
-### AI-assistent — 99 kr/mnd
+### AI-assistent
 
 - utkast til nyheter, talepunkter og artikler
 - forslag til samlingsprogram og kjøreplan
@@ -307,31 +305,18 @@ Demo: [demo.menighetsplan.no](https://demo.menighetsplan.no).
 
 ---
 
-## Pris, kort
-
-| | Pris | Binding |
-|--|------|---------|
-| Menighetsplattform | 0 kr | Ingen |
-| Menighetsplan | 499 kr/mnd | Ingen, måned for måned |
-| Hver tilleggsmodul | 99 kr/mnd | Aktiveres ved behov |
-| Prøve av Menighetsplan | 0 kr i 30 dager | Uten betalingskort |
-| Oppstart | 0 kr | — |
-
-Etter prøven: data beholdes, Menighetsplan-funksjonene pauses til man fortsetter.
-
----
-
 ## Setninger til nettsiden
 
 - Én plattform for hele menigheten. Nettside, CMS, kalender og menighetsverktøy — funksjonene aktiveres etter behov.
 - Start med det som er synlig utad. Oppgrader når dere skal organisere menneskene.
 - Legg inn samlingen én gang. Den vises på nettsiden, i gruppene og i kalenderen folk faktisk bruker.
 - Frivillige får akkurat den tilgangen de trenger. Ikke et nytt passord for hvert system.
-- 499 kroner i måneden for kjernen. 99 kroner per modul dere faktisk bruker. Ingen binding.
+- Start med grunnplattformen. Slå på Menighetsplan og tilleggsmoduler når dere trenger dem.
 
 ## Ikke lov på nettsiden
 
 - Konkrete besøkstall, prosentvekst eller «antall menigheter» fra demoen.
 - At AI leser hele medlemsregisteret. Den har avgrenset tilgang.
-- At gratisnivået inkluderer bemanning, medlemsregister eller gruppechat.
+- At Menighetsplattform inkluderer bemanning, medlemsregister eller gruppechat.
+- Konkrete priser, før prisen er endelig satt.
 - Funksjoner som ikke står i denne oversikten.
