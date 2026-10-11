@@ -49,8 +49,8 @@ Inkludert:
 - gudstjenester og offentlige samlinger
 - samlingsplanlegging og kjøreplan / program
 - dynamiske innholdsmoduler som henter data og oppdaterer nettsiden selv
-- enkel Min Side: neste i menigheten, kommende samlinger og lenker til relevant innhold
-- analyse: besøk og trafikk, aktivitet, bemanningsgrad, forfall og frivillig involvering
+- personregister, fordi innloggingen bygger på det
+- Min Side: innlogging uten passord, legg på hjemskjermen, og neste gudstjeneste. Enkel oversikt med kommende samlinger er planlagt
 
 ### 2. Menighetsplan
 
@@ -212,12 +212,7 @@ Ett kontrollpanel for innhold, kalender, grupper, brukere, statistikk og innstil
 
 ### Analyse
 
-Utviklet. Inngår i både Menighetsplattform og Menighetsplan.
-
-- nettside: besøk, trafikk og mest leste sider
-- menighet: aktivitet i husgrupper og samlinger
-- bemanningsgrad: hvor mange oppgaver som blir dekket
-- forfall og frivillig involvering over tid
+Utviklet tilleggsmodul, med i dag. Slås på oppå et nivå, i to deler: analysebord og anonym telling av besøk. Den inngår ikke automatisk i de to grunnnivåene.
 
 ---
 
