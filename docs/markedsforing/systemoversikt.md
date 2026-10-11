@@ -13,7 +13,7 @@ Tabellversjon, område for område: [Menighetsplan-omraade-for-omraade.pdf](Meni
 | Hva skjer i menigheten? | Menighetsplattform |
 | Hvem skal gjøre hva? | Menighetsplan |
 
-Tilleggsmoduler aktiveres etter behov. Pris er ikke tatt med her, fordi den ikke er endelig satt.
+«Tilleggsmodul» i tabellen betyr at funksjonen ikke er utviklet ennå. Pris er ikke tatt med her, fordi den ikke er endelig satt.
 
 ---
 
@@ -50,6 +50,7 @@ Inkludert:
 - samlingsplanlegging og kjøreplan / program
 - dynamiske innholdsmoduler som henter data og oppdaterer nettsiden selv
 - enkel Min Side: neste i menigheten, kommende samlinger og lenker til relevant innhold
+- analyse: besøk og trafikk, aktivitet, bemanningsgrad, forfall og frivillig involvering
 
 ### 2. Menighetsplan
 
@@ -70,7 +71,7 @@ Inkludert:
 
 ### 3. Tilleggsmoduler
 
-Aktiveres etter behov. Ingen pakketvang. Kan spørres om og slås på uten at kjernen endres.
+Ikke utviklet ennå. Inngår ikke i Menighetsplattform eller Menighetsplan før de er klare.
 
 | Modul | Kort sagt |
 |-------|-----------|
@@ -79,7 +80,6 @@ Aktiveres etter behov. Ingen pakketvang. Kan spørres om og slås på uten at kj
 | Arrangement | Påmelding, betaling og check-in |
 | Kommunikasjon | SMS, e-post og målrettede utsendelser |
 | Skjemaer | Skjemabygger for menighetens behov |
-| Analyse | Nettside- og menighetsinnsikt |
 | AI-assistent | GDPR-sikker assistent for staben |
 
 ---
@@ -210,11 +210,9 @@ Ett kontrollpanel for innhold, kalender, grupper, brukere, statistikk og innstil
 - menighetens egne innstillinger og design
 - oversikt: neste gudstjeneste, publisert status, husgrupper, ukehendelser
 
-### Analyse i kjernen og som modul
+### Analyse
 
-Enkel, personvernvennlig oversikt kan vises i administrasjonen (besøk, mest leste sider, mobil og desktop).
-
-Den utvidede **Analysemodulen** går lenger:
+Utviklet. Inngår i både Menighetsplattform og Menighetsplan.
 
 - nettside: besøk, trafikk og mest leste sider
 - menighet: aktivitet i husgrupper og samlinger
@@ -262,10 +260,6 @@ Inntekter fra utleie og givertjeneste kan etter hvert samles i en helhetlig øko
 - spørreundersøkelser
 - lagring i tråd med GDPR
 
-### Analyse
-
-Se punktet over. Dette er den dype innsikten, utover den enkle oversikten i administrasjonen.
-
 ### AI-assistent
 
 - utkast til nyheter, talepunkter og artikler
@@ -279,7 +273,7 @@ Se punktet over. Dette er den dype innsikten, utover den enkle oversikten i admi
 
 **Steg 1 — Start.** Nettside, CMS, kalender og taler. Offentlig profil på plass.
 
-**Steg 2 — Videre.** Når lederteam og frivillige er klare: grupper, full Min Side, kommunikasjon og analyse. Plattformen vokser i menighetens tempo. Ingen krav om å bruke alt fra dag én.
+**Steg 2 — Videre.** Når lederteam og frivillige er klare: grupper og full Min Side. Analyse følger med begge nivåer. Plattformen vokser i menighetens tempo. Ingen krav om å bruke alt fra dag én.
 
 Oppstartshjelp i Menighetsplan:
 
