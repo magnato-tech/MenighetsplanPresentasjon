@@ -15,22 +15,6 @@ export interface CalendarEvent {
   description: string;
 }
 
-export interface ChurchProfile {
-  id: string;
-  name: string;
-  location: string;
-  tagline: string;
-  accentColor: string;
-  primaryBg: string;
-  secondaryBg: string;
-  textColor: string;
-  badgeBg: string;
-  badgeText: string;
-  nextEvent: string;
-  membersCount: string;
-  activeGroups: number;
-}
-
 export interface ModuleItem {
   id: string;
   title: string;
@@ -97,54 +81,6 @@ export const MOCK_CALENDAR_EVENTS: CalendarEvent[] = [
     location: 'Kjellerstua',
     speakerOrLeader: 'Kasper & Lea',
     description: 'Sosialt, lovsang, kiosk og kafé for ungdom fra 13 til 19 år.'
-  }
-];
-
-export const MOCK_CHURCHES: ChurchProfile[] = [
-  {
-    id: 'sentrumskirken',
-    name: 'Sentrumskirken Oslo',
-    location: 'Oslo Sentrum',
-    tagline: 'Et åpent fellesskap midt i byen',
-    accentColor: '#1A382B',
-    primaryBg: '#FAF7F2',
-    secondaryBg: '#F1F7F3',
-    textColor: '#1A382B',
-    badgeBg: '#E5EFE9',
-    badgeText: '#1A382B',
-    nextEvent: 'Søndag 11:00 · Gudstjeneste',
-    membersCount: '340 aktive',
-    activeGroups: 14
-  },
-  {
-    id: 'kraftverket',
-    name: 'Kraftverket Fellesskap',
-    location: 'Vika / Majorstuen',
-    tagline: 'Autentisk tro i et urbant hverdagsliv',
-    accentColor: '#9C4221',
-    primaryBg: '#FDF8F5',
-    secondaryBg: '#FBECE6',
-    textColor: '#702D13',
-    badgeBg: '#F8DACD',
-    badgeText: '#702D13',
-    nextEvent: 'Søndag 17:00 · Kveldsgudstjeneste',
-    membersCount: '210 aktive',
-    activeGroups: 9
-  },
-  {
-    id: 'bydelskirken',
-    name: 'Bydelskirken',
-    location: 'Nydalen',
-    tagline: 'Nærvær og engasjement i nærmiljøet',
-    accentColor: '#1E3A5F',
-    primaryBg: '#F7F9FC',
-    secondaryBg: '#EBF2FA',
-    textColor: '#162C46',
-    badgeBg: '#D8E7F6',
-    badgeText: '#162C46',
-    nextEvent: 'Søndag 11:00 · Familiefeiring',
-    membersCount: '480 aktive',
-    activeGroups: 22
   }
 ];
 
