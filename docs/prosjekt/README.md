@@ -9,6 +9,7 @@
 | [datamodell.md](datamodell.md) | `customers` / registrering |
 | [CRM_SETUP.md](../CRM_SETUP.md) | Firebase + `crm.menighetsplan.no` på Vercel |
 | [PRODUCTION.md](../PRODUCTION.md) | Prod-sjekkliste, Resend, feilsøking |
+| [systemoversikt.md](../markedsforing/systemoversikt.md) | Funksjonsoversikt til nettside og salg |
 
 Kort oversikt: [SOLUTION_INDEX.md](../../SOLUTION_INDEX.md).
 
