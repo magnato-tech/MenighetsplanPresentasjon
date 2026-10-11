@@ -2,6 +2,8 @@
 
 Tekstgrunnlag for nettside og presentasjon. Alt under følger det som allerede formidles på salgssiden. Tall i demoer (besøk, antall grupper, menighetsnavn) er eksempler, ikke løfter.
 
+Tabellversjon, område for område: [Menighetsplan-omraade-for-omraade.pdf](Menighetsplan-omraade-for-omraade.pdf).
+
 **Én setning:** Én plattform for hele menigheten — nettside, CMS, kalender og digitale menighetsverktøy samlet på ett sted.
 
 **To spørsmål som styrer produktet:**
