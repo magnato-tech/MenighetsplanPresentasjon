@@ -536,8 +536,13 @@ export const PricingSection: React.FC<PricingSectionProps> = ({ onOpenContact, o
         </div>
 
         {/* Bottom Reassurance Banner */}
-        <div className="mt-14 text-center text-xs text-slate-500 max-w-xl mx-auto">
-          Start med gratis Menighetsplattform i dag. Test Menighetsplan gratis i 30 dager, og aktiver tilleggsmoduler kun dersom dere ønsker.
+        <div className="mt-14 text-center text-xs text-slate-500 max-w-xl mx-auto space-y-3">
+          <p>
+            Start med gratis Menighetsplattform i dag. Test Menighetsplan gratis i 30 dager, og aktiver tilleggsmoduler kun dersom dere ønsker.
+          </p>
+          <a href="#oversikt" className="inline-block font-semibold text-[#1A382B] hover:underline">
+            Se hele funksjonsoversikten
+          </a>
         </div>
 
       </div>

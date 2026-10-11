@@ -8,6 +8,7 @@ import { CalendarShowcase } from './components/CalendarShowcase';
 import { ExtensionsShowcase } from './components/ExtensionsShowcase';
 import { ChurchesShowcase } from './components/ChurchesShowcase';
 import { PricingSection } from './components/PricingSection';
+import { FunctionOverviewSection } from './components/FunctionOverviewSection';
 import { AboutSection } from './components/AboutSection';
 import { FaqSection } from './components/FaqSection';
 import { CtaSection } from './components/CtaSection';
@@ -54,6 +55,7 @@ export default function SalesApp() {
         <ExtensionsShowcase />
         <ChurchesShowcase />
         <PricingSection onOpenContact={handleOpenOnboarding} onOpenDemo={handleOpenDemo} />
+        <FunctionOverviewSection />
         <AboutSection />
         <FaqSection onOpenContact={handleOpenOnboarding} />
         <CtaSection

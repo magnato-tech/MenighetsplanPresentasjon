@@ -12,6 +12,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenContact, onOpenDemo }) => 
   const navLinks = [
     { label: 'Produkt', href: '#plattform' },
     { label: 'Funksjoner', href: '#funksjoner' },
+    { label: 'Oversikt', href: '#oversikt' },
     { label: 'Priser', href: '#priser' },
     { label: 'For menigheter', href: '#menigheter' },
     { label: 'Om Menighetsplan', href: '#om' },
@@ -37,7 +38,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenContact, onOpenDemo }) => 
           </div>
 
           {/* Zone 2: Desktop Navigation Links */}
-          <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-600">
+          <nav className="hidden lg:flex items-center gap-4 xl:gap-6 text-[13px] font-medium text-slate-600">
             {navLinks.map((link) => (
               <a
                 key={link.label}
@@ -50,7 +51,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenContact, onOpenDemo }) => 
           </nav>
 
           {/* Zone 3: Actions (Se demo & Prøv gratis) */}
-          <div className="hidden md:flex items-center gap-3">
+          <div className="hidden lg:flex items-center gap-3">
 
             <button
               onClick={onOpenDemo}
@@ -70,7 +71,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenContact, onOpenDemo }) => 
           </div>
 
           {/* Mobile hamburger button */}
-          <div className="flex md:hidden items-center">
+          <div className="flex lg:hidden items-center">
             <button
               type="button"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -86,7 +87,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenContact, onOpenDemo }) => 
 
       {/* Mobile dropdown menu */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-b border-[#1A382B]/10 bg-[#FAF7F2] px-4 pt-3 pb-6 shadow-xl animate-in slide-in-from-top-2 duration-200">
+        <div className="lg:hidden border-b border-[#1A382B]/10 bg-[#FAF7F2] px-4 pt-3 pb-6 shadow-xl animate-in slide-in-from-top-2 duration-200">
           <div className="flex flex-col space-y-3">
             {navLinks.map((link) => (
               <a
