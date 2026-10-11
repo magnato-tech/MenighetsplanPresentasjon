@@ -3,16 +3,16 @@ import cmsSider from '../assets/demo/cms-sider.png';
 
 const points = [
   {
-    title: 'Menyen bygges her',
-    body: 'Hovedfaner og underfaner, med status for kladd og publisert. Strukturen er den samme som besøkende ser på nettsiden.',
+    title: 'Teksten er den samme',
+    body: 'Tittel og ingress i hero er det som står øverst på forsiden. Endringen vises i forhåndsvisningen ved siden av.',
   },
   {
     title: 'Ekte forhåndsvisning',
-    body: 'Rediger siden til venstre og se den ferdige nettsiden til høyre, på desktop, nettbrett og mobil, før noe publiseres.',
+    body: 'Nettsiden til høyre er den ekte siden, på desktop, nettbrett og mobil, før noe publiseres.',
   },
   {
     title: 'Kalenderen følger med',
-    body: '«Neste gudstjeneste» på forsiden hentes fra arrangementet som er lagt inn. Den skrives ikke inn på nytt.',
+    body: '«Neste gudstjeneste» hentes fra arrangementet som er lagt inn. Den skrives ikke inn på nytt på forsiden.',
   },
 ];
 
@@ -28,18 +28,18 @@ export const CmsShowcase: React.FC = () => {
             En nettside dere faktisk kan styre selv
           </h2>
           <p className="mt-5 text-lg sm:text-xl text-slate-600 leading-relaxed">
-            I Admin og CMS Studio bygger dere menyen, redigerer sidene og ser den ekte nettsiden ved siden av.
+            Rediger forsiden og se den ekte nettsiden ved siden av, før noe publiseres.
           </p>
         </div>
 
         <figure className="mx-auto max-w-6xl">
           <img
             src={cmsSider}
-            alt="Admin og CMS Studio for Fjordvik menighet. Til venstre redigeres forsiden, til høyre vises den ekte nettsiden med velkomst og neste gudstjeneste."
+            alt="Redigering av forsiden til venstre, og den ekte nettsiden til Fjordvik menighet til høyre, med velkomst og neste gudstjeneste."
             className="w-full rounded-2xl border border-slate-300 shadow-xl bg-[#0b1220]"
           />
           <figcaption className="mt-3 text-center text-sm text-slate-500">
-            Fra demoen: Sider og innhold i Admin og CMS Studio, Fjordvik menighet.
+            Fra demoen: redigering av forsiden, med den ekte nettsiden ved siden av. Fjordvik menighet.
           </figcaption>
         </figure>
 
