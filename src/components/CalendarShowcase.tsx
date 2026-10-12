@@ -27,7 +27,7 @@ export const CalendarShowcase: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section Header */}
-        <div className="max-w-3xl mx-auto text-center mb-16">
+        <div className="max-w-3xl mx-auto text-center mb-8">
           <div className="text-xs font-bold uppercase tracking-wider text-[#1A382B] mb-3">
             Kalender
           </div>
@@ -37,6 +37,29 @@ export const CalendarShowcase: React.FC = () => {
           <p className="mt-5 text-lg sm:text-xl text-slate-600 leading-relaxed">
             Legg inn samlinger ett sted. Kalenderinformasjonen brukes automatisk på nettsiden, i ukeoversikter og for menighetens grupper uten manuelt dobbeltarbeid.
           </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-12">
+          {[
+            {
+              title: 'Bilde i planleggeren',
+              body: 'Bildet legges rett inn på arrangementet. Når nettsiden oppdaterer seg, vises et lite bilde på kortet.',
+            },
+            {
+              title: 'Fra mal',
+              body: 'Lag en mal av et arrangement som alt er satt opp, og opprett nye arrangementer ferdig utfylt.',
+            },
+            {
+              title: 'Serie',
+              body: 'Planlegg flere datoer fra samme mal. Du ser datoene før noe opprettes, og kan ta bort enkeltdatoer.',
+            },
+          ].map((item) => (
+            <div key={item.title} className="rounded-2xl border border-slate-200 bg-[#FAF7F2] p-5 text-left">
+              <div className="text-[11px] font-semibold uppercase tracking-wide text-amber-800">Planlagt</div>
+              <h3 className="mt-1 text-base font-bold text-slate-900">{item.title}</h3>
+              <p className="mt-2 text-sm text-slate-600 leading-relaxed">{item.body}</p>
+            </div>
+          ))}
         </div>
 
         {/* Calendar Interactive UI Container */}

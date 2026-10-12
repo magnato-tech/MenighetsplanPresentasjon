@@ -42,6 +42,9 @@ export const FUNCTION_AREAS: OverviewArea[] = [
       { name: 'Egne tekster i forsidens infobokser og i fellesskaps- og gaveseksjonen', platform: true, plan: true, status: planned },
       { name: 'Arkivside med alle nyhetsartiklene', platform: true, plan: true, status: planned },
       { name: 'Meld interesse for en gruppe direkte på nettsiden', platform: false, plan: true, status: planned },
+      { name: 'Egen side for hvert arrangement. Kortene i «Neste gudstjeneste», «Hva skjer» og kalenderlisten åpner siden, og viser et lite bilde når arrangementet har et', platform: true, plan: true, status: planned, group: 'Arrangementssider' },
+      { name: 'Bildet og ingressen følger med når arrangementet deles, og i kalenderabonnementet', platform: true, plan: true, status: planned },
+      { name: 'En nyhet som hører til et arrangement, får en faktaboks med tid og sted', platform: true, plan: true, status: planned },
     ],
   },
   {
@@ -71,6 +74,7 @@ export const FUNCTION_AREAS: OverviewArea[] = [
       { name: 'Nyheter med utløpsdato og kobling til et arrangement, og taler koblet til person og arrangement', platform: true, plan: true, status: planned },
       { name: 'Én felles kilde for stab og lederskap, med samtykke', platform: true, plan: true, status: planned },
       { name: 'Visuell redigering av blokker, og historikk med angre', platform: true, plan: true, status: planned },
+      { name: '«Arrangementer på nettsiden»: bildetekst, ingress, lang tekst og lenke eller knapp. Listen viser hvilke arrangementer som mangler bilde eller tekst. Selve bildet legges inn på arrangementet i planleggeren', platform: true, plan: true, status: planned, group: 'Arrangementer på nettsiden' },
     ],
   },
   {
@@ -78,7 +82,7 @@ export const FUNCTION_AREAS: OverviewArea[] = [
     number: '03',
     title: 'Kalender og arrangementer',
     description:
-      'Arrangementene legges inn ett sted. Derfra går de til nettsiden, til Min side og til andre nettsider som leser kalenderen.',
+      'Arrangementene legges inn ett sted. Derfra går de til nettsiden, til Min side og til andre nettsider som leser kalenderen. Bilde, maler og serier er besluttet for begge nivåer.',
     rows: [
       { name: 'Opprett, endre og avlys arrangementer med tittel, dato, start- og sluttid, sted og tema', platform: true, plan: true, status: live },
       { name: 'Tre synligheter: internt, offentlig i kalenderen, eller fremhevet øverst på forsiden', platform: true, plan: true, status: live },
@@ -86,6 +90,13 @@ export const FUNCTION_AREAS: OverviewArea[] = [
       { name: 'Et avlyst arrangement vises som avlyst, og løftes aldri fram på forsiden', platform: true, plan: true, status: live },
       { name: '«Lag neste arrangement»: samme arrangement på ny dato, med samme klokkeslett', platform: true, plan: true, status: live },
       { name: 'Åpent grensesnitt (API) som andre nettsider kan lese kalenderen fra', platform: true, plan: true, status: live },
+      { name: 'Ett skjema når du oppretter og når du endrer: tittel, dato, start, slutt som kan være en annen dag, sted, ansvarlig gruppe, gudstjeneste, tema, bibeltekst, synlighet og avlyst. Ingenting er påkrevd', platform: true, plan: true, status: planned, group: 'Skjema og bilde' },
+      { name: 'Bilde legges rett inn på arrangementet i planleggeren. Når nettsiden oppdaterer seg, vises et lite bilde på kortet. Malens bilde er standardbildet, og et arrangement uten bilde vises uten bilde', platform: true, plan: true, status: planned },
+      { name: '«Lag neste arrangement» kopierer også bilde og tekst', platform: true, plan: true, status: planned },
+      { name: 'Maler med fakta, bilde og tekst. Lag mal av et arrangement som alt er satt opp, eller opprett ett nytt arrangement fra malen', platform: true, plan: true, status: planned, group: 'Maler' },
+      { name: '«Planlegg serie» fra en mal: startdato, tidspunkt, siste dato og frekvens. Hver uke, hver 2., 3. eller 4. uke, eller én gang i måneden på samme ukedag og samme uke i måneden', platform: true, plan: true, status: planned, group: 'Serier' },
+      { name: 'Forhåndsvisning av alle datoene før noe opprettes. Enkeltdatoer kan tas bort, og du får beskjed der det allerede ligger et arrangement', platform: true, plan: true, status: planned },
+      { name: 'Etterpå er hvert arrangement et vanlig arrangement, merket som del av serien. Resten av serien kan slettes, unntatt de som noen alt har svart på', platform: true, plan: true, status: planned },
     ],
   },
   {
@@ -132,6 +143,8 @@ export const FUNCTION_AREAS: OverviewArea[] = [
       { name: 'Redigere programmet i kjøreplanen', platform: false, plan: true, status: planned },
       { name: 'Grunn for forfall, som bare leder og administrator ser', platform: false, plan: true, status: planned },
       { name: 'Varsel når samme person settes opp ofte', platform: false, plan: true, status: planned },
+      { name: 'Malen inneholder også standard bemanning: roller og antall. En fast person i malen blir forespurt på hvert arrangement, ikke satt opp som bekreftet', platform: false, plan: true, status: planned, group: 'Maler og serier' },
+      { name: '«Lag neste arrangement» kopierer også kjøreplanen. Klokkeslettene i kjøreplanen følger starttiden når arrangementet lages fra malen', platform: false, plan: true, status: planned },
     ],
   },
   {
