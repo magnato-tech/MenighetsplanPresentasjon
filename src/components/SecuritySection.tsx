@@ -1,5 +1,5 @@
 import React from 'react';
-import { Building2, KeyRound, ShieldAlert, UserCheck } from 'lucide-react';
+import { Building2, Download, FileText, KeyRound, ShieldAlert, UserCheck } from 'lucide-react';
 
 // Det som står her, skal stemme med løsningen slik den er i drift. Teksten er avstemt mot
 // produktdokumentasjonen i app-repoet (kapittel 7, 10 og 13) 13. oktober 2026. Det som ikke er
@@ -43,6 +43,24 @@ const topics = [
   },
 ];
 
+// Dokumentene menigheten (behandlingsansvarlig) og Menighetsplan (databehandler) signerer.
+// Et dokument uten `href` vises som «Kommer snart» og kan ikke trykkes på. Når filen finnes:
+// legg den i public/dokumenter/ og sett href til "/dokumenter/<filnavn>.pdf".
+const documents: { title: string; description: string; href?: string }[] = [
+  {
+    title: 'Databehandleravtale',
+    description: 'Avtalen mellom menigheten som behandlingsansvarlig og Menighetsplan som databehandler. Signeres av begge parter.',
+  },
+  {
+    title: 'Vedlegg: sikkerhetstiltak',
+    description: 'Hvordan opplysningene er beskyttet: tilgang, lagring, sikkerhetskopiering og håndtering av avvik.',
+  },
+  {
+    title: 'Vedlegg: underleverandører',
+    description: 'Hvem som behandler opplysninger på våre vegne, og hvor dataene ligger.',
+  },
+];
+
 export const SecuritySection: React.FC = () => {
   return (
     <section id="sikkerhet" className="py-20 lg:py-28 bg-white border-b border-[#1A382B]/10">
@@ -76,6 +94,38 @@ export const SecuritySection: React.FC = () => {
               </div>
             </div>
           ))}
+        </div>
+
+        <div id="dokumenter" className="mt-12 bg-[#FAF7F2] rounded-2xl p-7 border border-slate-200/80 shadow-xs">
+          <h3 className="text-lg font-bold text-slate-900 mb-2">Dokumenter til signering</h3>
+          <p className="text-sm text-slate-600 leading-relaxed max-w-3xl">
+            Når en menighet tar Menighetsplan i bruk, er menigheten behandlingsansvarlig og Menighetsplan databehandler. Dokumentene som regulerer dette, legges ut her for nedlasting.
+          </p>
+          <ul className="mt-5 grid grid-cols-1 md:grid-cols-3 gap-4">
+            {documents.map((document) => (
+              <li key={document.title} className="bg-white rounded-xl p-5 border border-slate-200/80 flex flex-col">
+                <div className="flex items-center gap-2 mb-2">
+                  <FileText className="w-4 h-4 text-[#1A382B] shrink-0" />
+                  <span className="text-sm font-bold text-slate-900">{document.title}</span>
+                </div>
+                <p className="text-sm text-slate-600 leading-relaxed flex-1">{document.description}</p>
+                {document.href ? (
+                  <a
+                    href={document.href}
+                    download
+                    className="mt-4 inline-flex items-center gap-1.5 self-start px-3 py-2 rounded-lg text-sm font-semibold text-[#FAF7F2] bg-[#1A382B] hover:bg-[#234D3B] transition-colors"
+                  >
+                    <Download className="w-4 h-4" />
+                    <span>Last ned (PDF)</span>
+                  </a>
+                ) : (
+                  <span className="mt-4 inline-flex self-start px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 bg-slate-100 border border-slate-200">
+                    Kommer snart
+                  </span>
+                )}
+              </li>
+            ))}
+          </ul>
         </div>
 
         <p className="max-w-3xl mx-auto mt-12 text-center text-base text-slate-700 leading-relaxed">
