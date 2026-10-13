@@ -10,6 +10,7 @@ import { ChurchesShowcase } from './components/ChurchesShowcase';
 import { PricingSection } from './components/PricingSection';
 import { FunctionOverviewSection } from './components/FunctionOverviewSection';
 import { AboutSection } from './components/AboutSection';
+import { SecuritySection } from './components/SecuritySection';
 import { FaqSection } from './components/FaqSection';
 import { CtaSection } from './components/CtaSection';
 import { Footer } from './components/Footer';
@@ -57,6 +58,7 @@ export default function SalesApp() {
         <PricingSection onOpenContact={handleOpenOnboarding} onOpenDemo={handleOpenDemo} />
         <FunctionOverviewSection />
         <AboutSection />
+        <SecuritySection />
         <FaqSection onOpenContact={handleOpenOnboarding} />
         <CtaSection
           onOpenContact={() => handleOpenOnboarding('cta-trial')}

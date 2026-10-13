@@ -102,7 +102,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenContact }) => {
               </li>
               <li>
                 <a 
-                  href="#faq" 
+                  href="#sikkerhet" 
                   className="text-slate-600 hover:text-[#1A382B] transition-colors"
                 >
                   Personvern & GDPR
